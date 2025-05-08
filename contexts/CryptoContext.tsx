@@ -87,7 +87,7 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setTickers(prev => [...prev, ...data]);
       setCurrentPage(nextPage);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al cargar más datos');
+      setError(err instanceof Error ? err.message : 'Error loading more data');
     } finally {
       setIsLoading(false);
     }
@@ -101,10 +101,10 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     setIsLoading(true);
     try {
-      // Usar nuestra utilidad para buscar en los datos ya cargados
+      // Use our utility to search in already loaded data
       const results = filterCoins(tickers, query);
       
-      // Si no hay suficientes resultados locales, buscar en la API
+      // If there aren't enough local results, search the API
       if (results.length < 5) {
         const apiResults = await coinloreService.searchCoins(query);
         setSearchResults(apiResults);
@@ -112,7 +112,7 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setSearchResults(results);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al buscar');
+      setError(err instanceof Error ? err.message : 'Error when searching');
     } finally {
       setIsLoading(false);
     }

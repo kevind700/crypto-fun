@@ -5,29 +5,39 @@ import { GlobalData } from '../services/types';
 import { formatLargeNumber } from '../utils/formatters';
 import { styles } from './GlobalStatsCard.styles';
 
+/**
+ * GlobalStatsCard component props
+ * @interface GlobalStatsCardProps
+ * @property {GlobalData} data - Global market data object
+ */
 interface GlobalStatsCardProps {
   data: GlobalData;
 }
 
+/**
+ * GlobalStatsCard component displays a summary of global cryptocurrency market data
+ * @param {GlobalStatsCardProps} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 const GlobalStatsCard: React.FC<GlobalStatsCardProps> = ({ data }) => {
   return (
     <Surface style={styles.container}>
-      <Text style={styles.title}>Resumen del Mercado</Text>
+      <Text style={styles.title}>Market Overview</Text>
       <View style={styles.statsGrid}>
         <StatItem 
-          label="Capitalización"
+          label="Market Cap"
           value={`$${formatLargeNumber(data.total_mcap)}`}
         />
         <StatItem 
-          label="Volumen 24h"
+          label="24h Volume"
           value={`$${formatLargeNumber(data.total_volume)}`}
         />
         <StatItem 
-          label="Dominancia BTC"
+          label="BTC Dominance"
           value={`${data.btc_d}%`}
         />
         <StatItem 
-          label="Monedas"
+          label="Coins"
           value={formatLargeNumber(data.coins_count)}
         />
       </View>
@@ -35,11 +45,22 @@ const GlobalStatsCard: React.FC<GlobalStatsCardProps> = ({ data }) => {
   );
 };
 
+/**
+ * StatItem component props
+ * @interface StatItemProps
+ * @property {string} label - Stat item label
+ * @property {string} value - Stat item value
+ */
 interface StatItemProps {
   label: string;
   value: string;
 }
 
+/**
+ * StatItem component displays a single market stat with label and value
+ * @param {StatItemProps} props - Component props  
+ * @returns {JSX.Element} Rendered component
+ */
 const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
   <View style={styles.statItem}>
     <Text style={styles.statLabel}>{label}</Text>

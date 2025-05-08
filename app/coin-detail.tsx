@@ -55,7 +55,7 @@ const CoinDetail = () => {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
-        <Text style={{ marginTop: 16 }}>Cargando información...</Text>
+        <Text style={{ marginTop: 16 }}>Loading information...</Text>
       </View>
     );
   }
@@ -64,9 +64,9 @@ const CoinDetail = () => {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.error} />
-        <Text style={{ marginTop: 16, color: theme.colors.error }}>{error || 'No se pudo cargar la información'}</Text>
+        <Text style={{ marginTop: 16, color: theme.colors.error }}>{error || 'Could not load information'}</Text>
         <Button mode="contained" style={{ marginTop: 16 }} onPress={() => {}}>
-          Intentar de nuevo
+          Try again
         </Button>
       </View>
     );
@@ -79,15 +79,15 @@ const CoinDetail = () => {
   const isPositive1h = change1h >= 0;
   const isPositive7d = change7d >= 0;
   
-  // Calcular supply y circulating supply
+  // Calculate supply and circulating supply
   const currentSupply = parseFloat(coin.csupply);
   const totalSupply = coin.tsupply ? parseFloat(coin.tsupply) : 0;
   const maxSupply = coin.msupply ? parseFloat(coin.msupply) : 0;
   
-  // Calcular porcentaje de suministro en circulación
+  // Calculate circulation supply percentage
   const supplyPercentage = totalSupply > 0 ? (currentSupply / totalSupply) * 100 : 0;
 
-  // Datos para la gráfica (simulados, ya que la API no proporciona datos históricos)
+  // Data for the chart (simulated, as the API doesn't provide historical data)
   const chartData = {
     labels: ['', '1H', '', '24H', '', '7D', ''],
     datasets: [
@@ -155,9 +155,9 @@ const CoinDetail = () => {
             </View>
           </View>
 
-          {/* Gráfico de precio */}
+          {/* Price Chart */}
           <View style={styles.chartContainer}>
-            <Text variant="titleMedium" style={styles.sectionTitle}>Gráfico de Precio</Text>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Price Chart</Text>
             <LineChart
               data={chartData}
               width={Dimensions.get('window').width - 50}
@@ -186,9 +186,9 @@ const CoinDetail = () => {
           </View>
         </Surface>
 
-        {/* Sección de información de cambios de precio */}
+        {/* Price Change Information Section */}
         <Surface style={styles.card}>
-          <Text variant="titleMedium" style={styles.sectionTitle}>Rendimiento</Text>
+          <Text variant="titleMedium" style={styles.sectionTitle}>Performance</Text>
           
           <View style={styles.timeframeContainer}>
             <View style={styles.timeframe}>
@@ -218,53 +218,53 @@ const CoinDetail = () => {
           </View>
         </Surface>
 
-        {/* Sección de estadísticas */}
+        {/* Statistics Section */}
         <Surface style={styles.card}>
-          <Text variant="titleMedium" style={styles.sectionTitle}>Estadísticas de Mercado</Text>
+          <Text variant="titleMedium" style={styles.sectionTitle}>Market Statistics</Text>
           
           <View style={styles.statRow}>
-            <Text style={styles.statLabel}>Precio en BTC</Text>
+            <Text style={styles.statLabel}>BTC Price</Text>
             <Text style={styles.statValue}>{parseFloat(coin.price_btc).toFixed(8)}</Text>
           </View>
           
           <View style={styles.statRow}>
-            <Text style={styles.statLabel}>Capitalización de Mercado</Text>
+            <Text style={styles.statLabel}>Market Cap</Text>
             <Text style={styles.statValue}>${formatValue(parseFloat(coin.market_cap_usd))}</Text>
           </View>
           
           <View style={styles.statRow}>
-            <Text style={styles.statLabel}>Volumen (24h)</Text>
+            <Text style={styles.statLabel}>Volume (24h)</Text>
             <Text style={styles.statValue}>${formatValue(parseFloat(coin.volume24))}</Text>
           </View>
         </Surface>
 
-        {/* Sección de supply */}
+        {/* Supply Information Section */}
         {totalSupply > 0 && (
           <Surface style={styles.card}>
-            <Text variant="titleMedium" style={styles.sectionTitle}>Información de Supply</Text>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Supply Information</Text>
             
             <View style={styles.statRow}>
-              <Text style={styles.statLabel}>Supply en Circulación</Text>
+              <Text style={styles.statLabel}>Circulating Supply</Text>
               <Text style={styles.statValue}>{formatValue(currentSupply)} {coin.symbol}</Text>
             </View>
             
             {totalSupply > 0 && (
               <View style={styles.statRow}>
-                <Text style={styles.statLabel}>Supply Total</Text>
+                <Text style={styles.statLabel}>Total Supply</Text>
                 <Text style={styles.statValue}>{formatValue(totalSupply)} {coin.symbol}</Text>
               </View>
             )}
             
             {maxSupply > 0 && (
               <View style={styles.statRow}>
-                <Text style={styles.statLabel}>Supply Máximo</Text>
+                <Text style={styles.statLabel}>Max Supply</Text>
                 <Text style={styles.statValue}>{formatValue(maxSupply)} {coin.symbol}</Text>
               </View>
             )}
             
             <View style={styles.progressContainer}>
               <View style={styles.progressInfo}>
-                <Text style={styles.progressLabel}>Porcentaje en Circulación</Text>
+                <Text style={styles.progressLabel}>Circulation Percentage</Text>
                 <Text style={styles.progressValue}>{supplyPercentage.toFixed(2)}%</Text>
               </View>
               <View style={styles.progressBarContainer}>
@@ -274,10 +274,10 @@ const CoinDetail = () => {
           </Surface>
         )}
 
-        {/* Sección de mercados */}
+        {/* Markets Section */}
         {markets.length > 0 && (
           <Surface style={styles.card}>
-            <Text variant="titleMedium" style={styles.sectionTitle}>Mercados</Text>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Markets</Text>
             
             {markets.slice(0, 5).map((market, index) => (
               <View key={index} style={styles.marketItem}>
@@ -291,7 +291,7 @@ const CoinDetail = () => {
             ))}
             
             {markets.length > 5 && (
-              <Text style={styles.moreMarketsText}>+ {markets.length - 5} más mercados</Text>
+              <Text style={styles.moreMarketsText}>+ {markets.length - 5} more markets</Text>
             )}
           </Surface>
         )}

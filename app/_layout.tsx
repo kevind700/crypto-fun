@@ -9,7 +9,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CryptoProvider } from '../contexts/CryptoContext';
 import { darkTheme } from '../theme';
 
+/**
+ * Root layout component that sets up the application's navigation stack and providers
+ * @returns {JSX.Element} Root layout component
+ */
 export default function RootLayout() {
+  // Load custom fonts when component mounts
   useEffect(() => {
     async function loadCustomFonts() {
       await Font.loadAsync({
@@ -37,6 +42,7 @@ export default function RootLayout() {
                 contentStyle: {
                   backgroundColor: darkTheme.colors.background,
                 },
+                headerBackTitle: '',
               }}>
               <Stack.Screen
                 name="(tabs)"

@@ -18,14 +18,14 @@ export const getTopGainers = (tickers: Ticker[], limit: number = LIMITS.TOP_MOVE
 };
 
 /**
- * Obtiene los primeros N tickers con mayor pérdida (menor ganancia)
+ * Gets the top N tickers with the highest loss (lowest gain)
  */
 export const getTopLosers = (tickers: Ticker[], limit: number = LIMITS.TOP_MOVERS): Ticker[] => {
   return sortTickersByPercentChange(tickers).slice(-limit).reverse();
 };
 
 /**
- * Busca monedas que coincidan con una consulta de búsqueda
+ * Searches for coins that match a search query
  */
 export const searchCoins = (coins: Ticker[], query: string): Ticker[] => {
   const searchQuery = query.toLowerCase().trim();
@@ -40,7 +40,7 @@ export const searchCoins = (coins: Ticker[], query: string): Ticker[] => {
 };
 
 /**
- * Ordena los tickers por capitalización de mercado descendente
+ * Sorts tickers by market cap in descending order
  */
 export const sortTickersByMarketCap = (tickers: Ticker[]): Ticker[] => {
   return [...tickers].sort((a, b) => 
@@ -49,7 +49,7 @@ export const sortTickersByMarketCap = (tickers: Ticker[]): Ticker[] => {
 };
 
 /**
- * Ordena los tickers por volumen (24h) descendente
+ * Sorts tickers by volume (24h) in descending order
  */
 export const sortTickersByVolume = (tickers: Ticker[]): Ticker[] => {
   return [...tickers].sort((a, b) => 

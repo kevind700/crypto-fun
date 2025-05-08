@@ -9,7 +9,12 @@ import GlobalStatsCard from './GlobalStatsCard';
 import { styles } from './MarketOverview.styles';
 import TopMoversCard from './TopMoversCard';
 
+/**
+ * MarketOverview component displays cryptocurrency market data and listings
+ * @returns {JSX.Element} Rendered component
+ */
 const MarketOverview: React.FC = () => {
+  // Get data and functions from the CryptoContext
   const { 
     tickers, 
     globalData, 
@@ -21,10 +26,15 @@ const MarketOverview: React.FC = () => {
     topLosers
   } = useCrypto();
 
+  // Handle error state
   if (error) {
     return <ErrorMessage message={error} />;
   }
 
+  /**
+   * Renders the footer loading indicator when loading more data
+   * @returns {JSX.Element | null} Footer component or null if not loading
+   */
   const renderFooter = () => {
     if (!isLoading) return null;
     return (
@@ -34,18 +44,26 @@ const MarketOverview: React.FC = () => {
     );
   };
 
+  /**
+   * Renders empty state message when no data is available
+   * @returns {JSX.Element | null} Empty state component or null if loading
+   */
   const renderEmptyComponent = () => {
     if (isLoading) return null;
-    return <EmptyState message="No hay datos disponibles" />;
+    return <EmptyState message="No data available" />;
   };
 
+  /**
+   * Renders the header components including global stats and top movers
+   * @returns {JSX.Element} Header component
+   */
   const renderHeader = () => (
     <>
       {globalData && <GlobalStatsCard data={globalData} />}
       
       {topGainers.length > 0 && (
         <TopMoversCard 
-          title="Top Ganadores (24h)" 
+          title="Top Gainers (24h)" 
           data={topGainers}
           onSelectCoin={setSelectedCoin}
         />
@@ -53,13 +71,13 @@ const MarketOverview: React.FC = () => {
       
       {topLosers.length > 0 && (
         <TopMoversCard 
-          title="Top Perdedores (24h)" 
+          title="Top Losers (24h)" 
           data={topLosers}
           onSelectCoin={setSelectedCoin}
         />
       )}
       
-      <Text style={styles.sectionTitle}>Todas las Criptomonedas</Text>
+      <Text style={styles.sectionTitle}>All Cryptocurrencies</Text>
     </>
   );
 

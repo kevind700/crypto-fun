@@ -13,11 +13,20 @@ import {
   getChangeColor
 } from './utils/formatters';
 
-// Componente para mostrar las criptomonedas con mayor movimiento
+/**
+ * Component props for TopMoversCard
+ * @interface TopMoversCardProps
+ * @property {Ticker[] | null} tickers - List of cryptocurrency tickers
+ */
 interface TopMoversCardProps {
   tickers: Ticker[] | null;
 }
 
+/**
+ * Component to display cryptocurrencies with the biggest price movements
+ * @param {TopMoversCardProps} props - Component props
+ * @returns {JSX.Element | null} Rendered component or null if no data
+ */
 const TopMoversCard: React.FC<TopMoversCardProps> = memo(({ tickers }) => {
   const theme = useTheme();
   
@@ -51,11 +60,20 @@ const TopMoversCard: React.FC<TopMoversCardProps> = memo(({ tickers }) => {
   );
 });
 
-// Componente para mostrar el resumen general del mercado
+/**
+ * Component props for MarketOverview
+ * @interface MarketOverviewProps
+ * @property {GlobalData | null} globalData - Global market data
+ */
 interface MarketOverviewProps {
   globalData: GlobalData | null;
 }
 
+/**
+ * Component to display general market overview data
+ * @param {MarketOverviewProps} props - Component props
+ * @returns {JSX.Element | null} Rendered component or null if no data
+ */
 const MarketOverview: React.FC<MarketOverviewProps> = memo(({ globalData }) => {
   const theme = useTheme();
   
@@ -69,7 +87,7 @@ const MarketOverview: React.FC<MarketOverviewProps> = memo(({ globalData }) => {
     <Surface style={[styles.card, { backgroundColor: theme.colors.surface }]}>
       <Text variant="titleMedium" style={styles.cardTitle}>Market Overview</Text>
       
-      {/* Sección de métricas principales */}
+      {/* Main metrics section */}
       <View style={styles.metricsContainer}>
         <View style={styles.metricBox}>
           <Text variant="titleMedium" style={styles.metricTitle}>Market Cap</Text>
@@ -118,7 +136,7 @@ const MarketOverview: React.FC<MarketOverviewProps> = memo(({ globalData }) => {
         </View>
       </View>
 
-      {/* Sección de dominancia del mercado */}
+      {/* Market dominance section */}
       <View style={styles.dominanceContainer}>
         <Text variant="titleMedium" style={styles.dominanceTitle}>Market Dominance</Text>
         <View style={styles.dominanceMetrics}>
@@ -140,7 +158,7 @@ const MarketOverview: React.FC<MarketOverviewProps> = memo(({ globalData }) => {
         </View>
       </View>
 
-      {/* Estadísticas adicionales */}
+      {/* Additional statistics */}
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
           <MaterialCommunityIcons name="chart-box-outline" size={20} color="#60a5fa" />
@@ -158,7 +176,10 @@ const MarketOverview: React.FC<MarketOverviewProps> = memo(({ globalData }) => {
   );
 });
 
-// Componente principal de la pantalla de inicio
+/**
+ * Main screen component for the home/overview tab
+ * @returns {JSX.Element} Rendered component
+ */
 const OverviewScreen = () => {
   const theme = useTheme();
   const {
