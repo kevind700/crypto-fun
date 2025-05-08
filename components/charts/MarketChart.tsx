@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
-import { useTheme, Text } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { GlobalData } from '../../services/types';
+import React from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { Text, useTheme } from 'react-native-paper';
+import { GlobalData } from '../../models/types/crypto';
 
 interface MarketChartProps {
   globalData?: GlobalData;

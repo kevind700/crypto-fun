@@ -14,8 +14,8 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Button, Surface, Text, useTheme } from 'react-native-paper';
+import { CoinMarket, Ticker } from '../models/types/crypto';
 import CoinloreApiService from '../services/CoinloreApiService';
-import { CoinMarket, Ticker } from '../services/types';
 
 /**
  * CoinDetail component displays comprehensive information about a cryptocurrency

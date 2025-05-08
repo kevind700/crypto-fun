@@ -7,7 +7,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SortModal, { SortOption } from '../../components/common/SortModal';
 import { useCrypto } from '../../contexts/CryptoContext';
-import { Ticker } from '../../services/types';
+import { Ticker } from '../../models/types/crypto';
 import { styles } from './styles/markets.styles';
 import {
   formatPercentChange,

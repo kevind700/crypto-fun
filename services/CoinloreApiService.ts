@@ -9,6 +9,19 @@
  */
 
 import {
+  CoinMarketsParams,
+  ExchangesParams,
+  SocialStatsParams,
+  TickersParams
+} from '../models/types/api';
+import {
+  CoinMarket,
+  Exchange,
+  GlobalData,
+  SocialStats,
+  Ticker
+} from '../models/types/crypto';
+import {
   getTopGainers,
   getTopLosers,
   searchCoins,
@@ -16,15 +29,6 @@ import {
   sortTickersByVolume
 } from '../utils/dataTransformers';
 import BaseApiService from './BaseApiService';
-import {
-  CoinMarket,
-  Exchange,
-  ExchangesParams,
-  GlobalData,
-  SocialStats,
-  Ticker,
-  TickersParams,
-} from './types';
 
 /**
  * CoinloreApiService provides access to the Coinlore cryptocurrency API
@@ -131,8 +135,9 @@ class CoinloreApiService extends BaseApiService {
    * @returns {Promise<CoinMarket[]>} Promise resolving to market data
    */
   async getCoinMarkets(coinId: string | number): Promise<CoinMarket[]> {
+    const params: CoinMarketsParams = { id: coinId };
     return this.get<CoinMarket[]>(`/coin/markets/`, {
-      params: { id: coinId },
+      params,
     });
   }
 
@@ -142,6 +147,7 @@ class CoinloreApiService extends BaseApiService {
    * @returns {Promise<SocialStats>} Promise resolving to social stats data
    */
   async getCoinSocialStats(coinName: string): Promise<SocialStats> {
+    const params: SocialStatsParams = { id: coinName };
     return this.get<SocialStats>(`/coin/social_stats/${coinName}`);
   }
 

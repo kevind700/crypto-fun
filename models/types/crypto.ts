@@ -1,20 +1,12 @@
 /**
- * API and Application Type Definitions
+ * Cryptocurrency Data Types
  * 
- * This module contains TypeScript interface definitions for:
- * - API responses from the Coinlore API
- * - API request parameters
- * - UI state types
- * - Chart data structures
- * - Application-specific types
- * 
- * These type definitions ensure proper type checking and IntelliSense
- * throughout the application.
+ * This module contains type definitions for cryptocurrency data,
+ * such as tickers, global market data, and exchanges.
  */
 
 /**
  * Represents a cryptocurrency ticker from the Coinlore API
- * @interface Ticker
  */
 export interface Ticker {
   id: string;                     // Unique identifier
@@ -37,7 +29,6 @@ export interface Ticker {
 
 /**
  * Represents global cryptocurrency market data
- * @interface GlobalData
  */
 export interface GlobalData {
   coins_count: number;            // Total number of active cryptocurrencies
@@ -48,14 +39,13 @@ export interface GlobalData {
   eth_d: string;                  // Ethereum dominance percentage
   mcap_change: string;            // Market cap change percentage in 24h
   volume_change: string;          // Volume change percentage in 24h
-  avg_change_percent: number;     // Average price change percentage
+  avg_change_percent: number;     // Average change percentage
   volume_ath: number;             // All-time high 24h volume
   mcap_ath: number;               // All-time high market cap
 }
 
 /**
  * Represents a cryptocurrency exchange
- * @interface Exchange
  */
 export interface Exchange {
   id: string;                     // Unique identifier
@@ -74,7 +64,6 @@ export interface Exchange {
 
 /**
  * Represents a market where a cryptocurrency is traded
- * @interface CoinMarket
  */
 export interface CoinMarket {
   name: string;                   // Exchange name
@@ -89,7 +78,6 @@ export interface CoinMarket {
 
 /**
  * Represents social media statistics for a cryptocurrency
- * @interface SocialStats
  */
 export interface SocialStats {
   name: string;                   // Cryptocurrency name
@@ -124,72 +112,7 @@ export interface SocialStats {
 }
 
 /**
- * API Parameters Types
- */
-
-/**
- * Parameters for fetching multiple tickers
- * @interface TickersParams
- */
-export interface TickersParams {
-  start?: number;                 // Starting index for pagination
-  limit?: number;                 // Maximum number of results
-}
-
-/**
- * Parameters for fetching a specific ticker
- * @interface TickerParams
- */
-export interface TickerParams {
-  id: string | number;            // Cryptocurrency ID
-}
-
-/**
- * Parameters for fetching exchanges
- * @interface ExchangesParams
- */
-export interface ExchangesParams {
-  start?: number;                 // Starting index for pagination
-  limit?: number;                 // Maximum number of results
-}
-
-/**
- * UI State Types
- */
-
-/**
- * Application UI state
- * @interface UIState
- */
-export interface UIState {
-  isLoading: boolean;             // Whether data is currently loading
-  error: string | null;           // Error message if any
-  selectedCoin: Ticker | null;    // Currently selected cryptocurrency
-  selectedExchange: Exchange | null; // Currently selected exchange
-  searchQuery: string;            // Current search query
-  refreshing: boolean;            // Whether UI is refreshing
-}
-
-/**
- * Chart Data Types
- */
-
-/**
- * Data structure for charts
- * @interface ChartData
- */
-export interface ChartData {
-  labels: string[];               // X-axis labels
-  datasets: {                     // Chart datasets
-    data: number[];               // Y-axis data points
-    color?: (opacity?: number) => string; // Color function
-    strokeWidth?: number;         // Line width
-  }[];
-}
-
-/**
- * Market metrics for dashboard
- * @interface MarketMetrics
+ * Market metrics for dashboard display
  */
 export interface MarketMetrics {
   totalMarketCap: number;         // Total market capitalization
@@ -202,7 +125,6 @@ export interface MarketMetrics {
 
 /**
  * Price alert configuration
- * @interface PriceAlert
  */
 export interface PriceAlert {
   coinId: string;                 // Cryptocurrency ID
@@ -210,4 +132,4 @@ export interface PriceAlert {
   condition: 'above' | 'below';   // Alert condition
   active: boolean;                // Whether alert is active
   createdAt: Date;                // Creation timestamp
-}
+} 

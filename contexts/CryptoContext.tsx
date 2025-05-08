@@ -13,8 +13,8 @@
  */
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { GlobalData, Ticker } from '../models/types/crypto';
 import CoinloreApiService from '../services/CoinloreApiService';
-import { GlobalData, Ticker } from '../services/types';
 import { searchCoins as filterCoins, getTopGainers, getTopLosers } from '../utils/dataTransformers';
 
 /**

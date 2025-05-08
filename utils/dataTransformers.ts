@@ -11,7 +11,7 @@
  */
 
 import { LIMITS } from '../constants';
-import { Ticker } from '../services/types';
+import { Ticker } from '../models/types/crypto';
 
 /**
  * Sorts cryptocurrency tickers by 24-hour percentage change in descending order

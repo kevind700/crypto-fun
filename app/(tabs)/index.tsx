@@ -16,7 +16,7 @@ import { RefreshControl, ScrollView, View } from 'react-native';
 import { Surface, Text, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCrypto } from '../../contexts/CryptoContext';
-import { GlobalData, Ticker } from '../../services/types';
+import { GlobalData, Ticker } from '../../models/types/crypto';
 import { styles } from './styles/index.styles';
 import {
   formatPercentChange,

@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { GlobalData } from '../services/types';
+import { StyleSheet, Text, View } from 'react-native';
+import { GlobalData } from '../models/types/crypto';
 
 interface GlobalStatsProps {
   data: GlobalData;

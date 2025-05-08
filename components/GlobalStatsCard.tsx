@@ -12,7 +12,7 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
 import { Surface } from 'react-native-paper';
-import { GlobalData } from '../services/types';
+import { GlobalData } from '../models/types/crypto';
 import { formatLargeNumber } from '../utils/formatters';
 import { styles } from './GlobalStatsCard.styles';
 

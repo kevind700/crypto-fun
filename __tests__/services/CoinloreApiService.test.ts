@@ -1,6 +1,6 @@
 import axios from 'axios';
+import { CoinMarket, Exchange, GlobalData, SocialStats } from '../../models/types/crypto';
 import CoinloreApiService from '../../services/CoinloreApiService';
-import { CoinMarket, Exchange, GlobalData, SocialStats } from '../../services/types';
 
 jest.mock('axios', () => {
   const mockAxios: any = {

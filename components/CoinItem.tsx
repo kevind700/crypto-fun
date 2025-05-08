@@ -10,7 +10,7 @@
 
 import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Ticker } from '../services/types';
+import { Ticker } from '../models/types/crypto';
 import { formatPercentChange, formatPrice, getChangeColor } from '../utils/formatters';
 import { styles } from './CoinItem.styles';
 

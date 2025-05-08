@@ -11,7 +11,7 @@
 import React, { memo } from 'react';
 import { FlatList, Text, TouchableOpacity } from 'react-native';
 import { Surface } from 'react-native-paper';
-import { Ticker } from '../services/types';
+import { Ticker } from '../models/types/crypto';
 import { formatPercentChange, formatPrice, getChangeColor } from '../utils/formatters';
 import { styles } from './TopMoversCard.styles';
 

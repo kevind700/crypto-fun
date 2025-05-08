@@ -4,8 +4,8 @@ import { FlatList, Linking, View } from 'react-native';
 import { Searchbar, Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SortModal, { SortOption } from '../../components/common/SortModal';
+import { Exchange } from '../../models/types/crypto';
 import CoinloreApiService from '../../services/CoinloreApiService';
-import { Exchange } from '../../services/types';
 import { styles } from './styles/exchanges.styles';
 import { formatVolume } from './utils/formatters';
 
