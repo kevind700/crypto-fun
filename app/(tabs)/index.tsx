@@ -2,6 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { memo } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 import { Surface, Text, useTheme } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useCrypto } from '../../contexts/CryptoContext';
 import { GlobalData, Ticker } from '../../services/types';
 import { styles } from './styles/index.styles';
@@ -168,17 +169,21 @@ const OverviewScreen = () => {
   } = useCrypto();
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      refreshControl={
-        <RefreshControl refreshing={isLoading} onRefresh={refreshData} />
-      }
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent}
+    <SafeAreaView 
+      style={[styles.container, { backgroundColor: theme.colors.background }]} 
+      edges={['top']}
     >
-      <MarketOverview globalData={globalData} />
-      <TopMoversCard tickers={tickers} />
-    </ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={refreshData} />
+        }
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <MarketOverview globalData={globalData} />
+        <TopMoversCard tickers={tickers} />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -11,11 +11,15 @@ export const getTabStyles = (colors: any) => ({
     shadowOpacity: 0,
     height: Platform.OS === 'ios' ? 90 : 60,
     paddingBottom: Platform.OS === 'ios' ? 30 : 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowRadius: 3,
   },
   tabBarLabelStyle: {
     fontFamily: 'System',
     fontSize: TYPOGRAPHY.FONT_SIZE_XS,
     fontWeight: TYPOGRAPHY.FONT_WEIGHT_MEDIUM,
+    marginTop: LAYOUT.SPACING_XS,
   },
   headerStyle: {
     backgroundColor: colors.surface,

@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
-import { Stack } from 'expo-router';
-import { Provider as PaperProvider } from 'react-native-paper';
-import { darkTheme } from '../theme';
-import * as Font from 'expo-font';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Font from 'expo-font';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CryptoProvider } from '../contexts/CryptoContext';
+import { darkTheme } from '../theme';
 
 export default function RootLayout() {
   useEffect(() => {
@@ -19,30 +21,33 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PaperProvider theme={darkTheme}>
-        <CryptoProvider>
-          <Stack
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: darkTheme.colors.surface,
-              },
-              headerTintColor: darkTheme.colors.onSurface,
-              headerTitleStyle: {
-                fontWeight: 'bold',
-              },
-              contentStyle: {
-                backgroundColor: darkTheme.colors.background,
-              },
-            }}>
-            <Stack.Screen
-              name="(tabs)"
-              options={{
-                headerShown: false,
-              }}
-            />
-          </Stack>
-        </CryptoProvider>
-      </PaperProvider>
+      <StatusBar style="light" />
+      <SafeAreaProvider>
+        <PaperProvider theme={darkTheme}>
+          <CryptoProvider>
+            <Stack
+              screenOptions={{
+                headerStyle: {
+                  backgroundColor: darkTheme.colors.surface,
+                },
+                headerTintColor: darkTheme.colors.onSurface,
+                headerTitleStyle: {
+                  fontWeight: 'bold',
+                },
+                contentStyle: {
+                  backgroundColor: darkTheme.colors.background,
+                },
+              }}>
+              <Stack.Screen
+                name="(tabs)"
+                options={{
+                  headerShown: false,
+                }}
+              />
+            </Stack>
+          </CryptoProvider>
+        </PaperProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

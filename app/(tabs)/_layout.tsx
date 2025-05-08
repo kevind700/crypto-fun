@@ -5,7 +5,10 @@ import { getTabStyles } from './styles/_layout.styles';
 
 export default function TabLayout() {
   const theme = useTheme();
-  const screenOptions = getTabStyles(theme.colors);
+  const screenOptions = {
+    ...getTabStyles(theme.colors),
+    headerShown: false,
+  };
 
   return (
     <Tabs screenOptions={screenOptions}>

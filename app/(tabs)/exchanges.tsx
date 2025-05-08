@@ -2,6 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { memo, useEffect, useState } from 'react';
 import { FlatList, Linking, View } from 'react-native';
 import { Searchbar, Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import SortModal, { SortOption } from '../../components/common/SortModal';
 import CoinloreApiService from '../../services/CoinloreApiService';
 import { Exchange } from '../../services/types';
@@ -146,7 +147,10 @@ const Exchanges = () => {
   });
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView 
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={['top']}
+    >
       <View style={styles.headerContainer}>
         <View style={styles.headerControls}>
           <Searchbar
@@ -154,12 +158,21 @@ const Exchanges = () => {
             onChangeText={setSearchQuery}
             value={searchQuery}
             style={[styles.searchBar, { 
-              backgroundColor: '#1E293B',
-              borderRadius: 18,
+              backgroundColor: 'rgba(30, 41, 59, 0.8)',
+              borderRadius: 20,
+              elevation: 0,
+              height: 44,
+              borderWidth: 1,
+              borderColor: 'rgba(96, 165, 250, 0.2)',
             }]}
             icon="magnify"
             iconColor="#60A5FA"
-            inputStyle={{ color: '#FFFFFF', fontSize: 15 }}
+            inputStyle={{ 
+              color: '#FFFFFF', 
+              fontSize: 14,
+              alignSelf: 'center',
+              marginLeft: -5
+            }}
             placeholderTextColor="rgba(148, 163, 184, 0.8)"
           />
           
@@ -192,7 +205,7 @@ const Exchanges = () => {
         onRefresh={loadExchanges}
         ListEmptyComponent={<EmptyListComponent />}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

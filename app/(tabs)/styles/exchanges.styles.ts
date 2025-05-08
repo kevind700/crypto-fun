@@ -7,7 +7,13 @@ export const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingHorizontal: LAYOUT.SPACING_LG,
-    paddingVertical: LAYOUT.SPACING_MD,
+    paddingVertical: LAYOUT.SPACING_SM,
+    backgroundColor: 'rgba(15, 23, 42, 0.5)',
+    shadowColor: 'rgba(0, 0, 0, 0.3)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    elevation: 2,
   },
   headerControls: {
     flexDirection: 'row',
@@ -18,6 +24,10 @@ export const styles = StyleSheet.create({
     flex: 1,
     marginRight: LAYOUT.SPACING_MD,
     height: 40,
+    shadowColor: 'rgba(96, 165, 250, 0.2)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 2,
+    shadowOpacity: 0.3,
   },
   sortInfoContainer: {
     marginTop: LAYOUT.SPACING_SM,
