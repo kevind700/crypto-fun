@@ -9,7 +9,6 @@ import SortModal, { SortOption } from '../../components/common/SortModal';
 type SortField = 'rank' | 'volume_usd' | 'active_pairs';
 
 const sortOptions: SortOption<SortField>[] = [
-  { field: 'rank', label: 'Rank' },
   { field: 'volume_usd', label: 'Volume' },
   { field: 'active_pairs', label: 'Pairs' },
 ];
@@ -27,8 +26,8 @@ const Exchanges = () => {
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<SortField>('rank');
-  const [sortAsc, setSortAsc] = useState(true);
+  const [sortField, setSortField] = useState<SortField>('volume_usd');
+  const [sortAsc, setSortAsc] = useState(false);
 
   useEffect(() => {
     loadExchanges();
@@ -92,9 +91,6 @@ const Exchanges = () => {
                   {item.country || 'Unknown location'}
                 </Text>
               </View>
-            </View>
-            <View style={styles.rankContainer}>
-              <Text style={styles.rankText}>{item.rank}</Text>
             </View>
           </View>
 
@@ -234,20 +230,7 @@ const styles = StyleSheet.create({
   locationText: {
     color: '#94A3B8',
   },
-  rankContainer: {
-    backgroundColor: '#1d4ed8',
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 28,
-  },
-  rankText: {
-    color: '#FFFFFF',
-    fontWeight: '500',
-    fontSize: 13,
-  },
+
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
