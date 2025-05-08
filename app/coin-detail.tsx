@@ -1,3 +1,13 @@
+/**
+ * Coin Detail Screen
+ * 
+ * This component displays detailed information about a specific cryptocurrency.
+ * It fetches data from the CoinloreApiService and displays price information,
+ * charts, market statistics, supply information, and markets where the coin is traded.
+ * 
+ * The UI is organized into several card sections for better readability and user experience.
+ */
+
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -7,42 +17,66 @@ import { Button, Surface, Text, useTheme } from 'react-native-paper';
 import CoinloreApiService from '../services/CoinloreApiService';
 import { CoinMarket, Ticker } from '../services/types';
 
+/**
+ * CoinDetail component displays comprehensive information about a cryptocurrency
+ * @returns {JSX.Element} The rendered component
+ */
 const CoinDetail = () => {
+  // Get the coin ID from URL params
   const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useTheme();
+  
+  // State management
   const [coin, setCoin] = useState<Ticker | null>(null);
   const [markets, setMarkets] = useState<CoinMarket[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Fetch coin details and markets data when component mounts or ID changes
+   */
   useEffect(() => {
     const fetchCoinDetails = async () => {
       setLoading(true);
       setError(null);
       try {
+        // Get the API service instance
         const coinloreService = CoinloreApiService.getInstance();
+        
+        // Fetch coin data and markets data in parallel
         const [coinData, marketsData] = await Promise.all([
           coinloreService.getTicker(id),
           coinloreService.getCoinMarkets(id)
         ]);
         
+        // Set coin data if available
         if (coinData && coinData.length > 0) {
           setCoin(coinData[0]);
         }
+        
+        // Set markets data
         setMarkets(marketsData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error al cargar los datos');
+        // Handle errors
+        setError(err instanceof Error ? err.message : 'Error loading data');
         console.error('Error fetching coin details:', err);
       } finally {
+        // Always set loading to false when done
         setLoading(false);
       }
     };
 
+    // Only fetch if ID is available
     if (id) {
       fetchCoinDetails();
     }
   }, [id]);
 
+  /**
+   * Format large numbers with appropriate suffixes (T, B, M, K)
+   * @param {number} value - The number to format
+   * @returns {string} Formatted string with appropriate suffix
+   */
   const formatValue = (value: number): string => {
     if (value >= 1e12) return (value / 1e12).toFixed(2) + 'T';
     if (value >= 1e9) return (value / 1e9).toFixed(2) + 'B';
@@ -51,6 +85,7 @@ const CoinDetail = () => {
     return value.toFixed(2);
   };
 
+  // Show loading state
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -60,6 +95,7 @@ const CoinDetail = () => {
     );
   }
 
+  // Show error state
   if (error || !coin) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -72,6 +108,7 @@ const CoinDetail = () => {
     );
   }
 
+  // Process coin data for display
   const priceChange = parseFloat(coin.percent_change_24h);
   const isPositive = priceChange >= 0;
   const change1h = parseFloat(coin.percent_change_1h);
@@ -107,8 +144,10 @@ const CoinDetail = () => {
     ]
   };
 
+  // Render the coin detail screen
   return (
     <>
+      {/* Configure the Stack.Screen header */}
       <Stack.Screen 
         options={{
           title: `${coin.symbol} - ${coin.name}`,
@@ -119,7 +158,9 @@ const CoinDetail = () => {
         }}
       />
       <ScrollView style={styles.container}>
+        {/* Header card with basic coin info and price chart */}
         <Surface style={styles.headerCard}>
+          {/* Basic coin information section */}
           <View style={styles.coinBasicInfo}>
             <View style={styles.coinIdentity}>
               <View style={styles.rankBadge}>
@@ -191,6 +232,7 @@ const CoinDetail = () => {
           <Text variant="titleMedium" style={styles.sectionTitle}>Performance</Text>
           
           <View style={styles.timeframeContainer}>
+            {/* 1 hour performance */}
             <View style={styles.timeframe}>
               <Text style={styles.timeframeLabel}>1h</Text>
               <View style={[styles.timeframeValue, { backgroundColor: isPositive1h ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }]}>
@@ -199,6 +241,7 @@ const CoinDetail = () => {
                 </Text>
               </View>
             </View>
+            {/* 24 hour performance */}
             <View style={styles.timeframe}>
               <Text style={styles.timeframeLabel}>24h</Text>
               <View style={[styles.timeframeValue, { backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }]}>
@@ -207,6 +250,7 @@ const CoinDetail = () => {
                 </Text>
               </View>
             </View>
+            {/* 7 day performance */}
             <View style={styles.timeframe}>
               <Text style={styles.timeframeLabel}>7d</Text>
               <View style={[styles.timeframeValue, { backgroundColor: isPositive7d ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }]}>
@@ -222,32 +266,37 @@ const CoinDetail = () => {
         <Surface style={styles.card}>
           <Text variant="titleMedium" style={styles.sectionTitle}>Market Statistics</Text>
           
+          {/* BTC Price */}
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>BTC Price</Text>
             <Text style={styles.statValue}>{parseFloat(coin.price_btc).toFixed(8)}</Text>
           </View>
           
+          {/* Market Cap */}
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Market Cap</Text>
             <Text style={styles.statValue}>${formatValue(parseFloat(coin.market_cap_usd))}</Text>
           </View>
           
+          {/* 24h Volume */}
           <View style={styles.statRow}>
             <Text style={styles.statLabel}>Volume (24h)</Text>
             <Text style={styles.statValue}>${formatValue(parseFloat(coin.volume24))}</Text>
           </View>
         </Surface>
 
-        {/* Supply Information Section */}
+        {/* Supply Information Section - only shown if totalSupply > 0 */}
         {totalSupply > 0 && (
           <Surface style={styles.card}>
             <Text variant="titleMedium" style={styles.sectionTitle}>Supply Information</Text>
             
+            {/* Circulating Supply */}
             <View style={styles.statRow}>
               <Text style={styles.statLabel}>Circulating Supply</Text>
               <Text style={styles.statValue}>{formatValue(currentSupply)} {coin.symbol}</Text>
             </View>
             
+            {/* Total Supply */}
             {totalSupply > 0 && (
               <View style={styles.statRow}>
                 <Text style={styles.statLabel}>Total Supply</Text>
@@ -255,6 +304,7 @@ const CoinDetail = () => {
               </View>
             )}
             
+            {/* Max Supply - only shown if maxSupply > 0 */}
             {maxSupply > 0 && (
               <View style={styles.statRow}>
                 <Text style={styles.statLabel}>Max Supply</Text>
@@ -262,6 +312,7 @@ const CoinDetail = () => {
               </View>
             )}
             
+            {/* Circulation percentage progress bar */}
             <View style={styles.progressContainer}>
               <View style={styles.progressInfo}>
                 <Text style={styles.progressLabel}>Circulation Percentage</Text>
@@ -274,11 +325,12 @@ const CoinDetail = () => {
           </Surface>
         )}
 
-        {/* Markets Section */}
+        {/* Markets Section - only shown if markets exist */}
         {markets.length > 0 && (
           <Surface style={styles.card}>
             <Text variant="titleMedium" style={styles.sectionTitle}>Markets</Text>
             
+            {/* Display up to 5 markets */}
             {markets.slice(0, 5).map((market, index) => (
               <View key={index} style={styles.marketItem}>
                 <Text style={styles.marketName}>{market.name}</Text>
@@ -290,6 +342,7 @@ const CoinDetail = () => {
               </View>
             ))}
             
+            {/* Show how many more markets are available if > 5 */}
             {markets.length > 5 && (
               <Text style={styles.moreMarketsText}>+ {markets.length - 5} more markets</Text>
             )}
@@ -297,6 +350,7 @@ const CoinDetail = () => {
         )}
       </ScrollView>
       
+      {/* Floating back button */}
       <TouchableOpacity 
         style={styles.backButton}
         onPress={() => router.back()}
@@ -307,7 +361,11 @@ const CoinDetail = () => {
   );
 };
 
+/**
+ * Styles for the CoinDetail component
+ */
 const styles = StyleSheet.create({
+  // Main container styles
   container: {
     flex: 1,
     backgroundColor: '#0F172A',
@@ -316,6 +374,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  
+  // Card container styles
   headerCard: {
     backgroundColor: '#1E293B',
     borderRadius: 16,
@@ -333,6 +393,8 @@ const styles = StyleSheet.create({
     padding: 16,
     elevation: 2,
   },
+  
+  // Coin basic info section styles
   coinBasicInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -361,6 +423,8 @@ const styles = StyleSheet.create({
   nameText: {
     color: '#94A3B8',
   },
+  
+  // Price section styles
   priceSection: {
     alignItems: 'flex-end',
   },
@@ -380,6 +444,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
   },
+  
+  // Chart container styles
   chartContainer: {
     marginTop: 24,
     alignItems: 'center',
@@ -389,6 +455,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontWeight: 'bold',
   },
+  
+  // Timeframe section styles
   timeframeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -412,6 +480,8 @@ const styles = StyleSheet.create({
   timeframeText: {
     fontWeight: '500',
   },
+  
+  // Stats row styles
   statRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -426,6 +496,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '500',
   },
+  
+  // Progress bar styles
   progressContainer: {
     marginTop: 16,
   },
@@ -452,6 +524,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#60A5FA',
     borderRadius: 4,
   },
+  
+  // Market item styles
   marketItem: {
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -483,6 +557,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 12,
   },
+  
+  // Back button styles
   backButton: {
     position: 'absolute',
     bottom: 24,

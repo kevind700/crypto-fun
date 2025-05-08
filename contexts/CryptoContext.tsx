@@ -1,24 +1,45 @@
+/**
+ * Crypto Context Provider
+ * 
+ * This module creates a React context for managing cryptocurrency data across the application.
+ * It provides:
+ * - Cryptocurrency data fetching and caching
+ * - Market stats and global data
+ * - Search functionality
+ * - Top gainers and losers tracking
+ * - Infinite scrolling capabilities
+ * 
+ * The context follows best practices for React Context API usage and state management.
+ */
+
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import CoinloreApiService from '../services/CoinloreApiService';
 import { GlobalData, Ticker } from '../services/types';
 import { searchCoins as filterCoins, getTopGainers, getTopLosers } from '../utils/dataTransformers';
 
+/**
+ * CryptoContextType interface defines the shape of the context data
+ * @interface CryptoContextType
+ */
 interface CryptoContextType {
-  tickers: Ticker[];
-  globalData: GlobalData | null;
-  isLoading: boolean;
-  error: string | null;
-  refreshData: () => Promise<void>;
-  searchCoins: (query: string) => Promise<void>;
-  searchResults: Ticker[];
-  selectedCoin: Ticker | null;
-  setSelectedCoin: (coin: Ticker | null) => void;
-  loadMore: () => Promise<void>;
-  currentPage: number;
-  topGainers: Ticker[];
-  topLosers: Ticker[];
+  tickers: Ticker[];                               // List of all cryptocurrency tickers
+  globalData: GlobalData | null;                   // Global market data
+  isLoading: boolean;                              // Loading state indicator
+  error: string | null;                            // Error message if any
+  refreshData: () => Promise<void>;                // Function to refresh all data
+  searchCoins: (query: string) => Promise<void>;   // Function to search for coins
+  searchResults: Ticker[];                         // Search results
+  selectedCoin: Ticker | null;                     // Currently selected coin
+  setSelectedCoin: (coin: Ticker | null) => void;  // Function to set selected coin
+  loadMore: () => Promise<void>;                   // Function to load more tickers (pagination)
+  currentPage: number;                             // Current page for pagination
+  topGainers: Ticker[];                            // List of top gaining coins
+  topLosers: Ticker[];                             // List of top losing coins
 }
 
+/**
+ * Create the context with default values
+ */
 const CryptoContext = createContext<CryptoContextType>({
   tickers: [],
   globalData: null,
@@ -35,9 +56,20 @@ const CryptoContext = createContext<CryptoContextType>({
   topLosers: [],
 });
 
+/**
+ * Custom hook to use the crypto context
+ * @returns {CryptoContextType} The crypto context
+ */
 export const useCrypto = () => useContext(CryptoContext);
 
+/**
+ * CryptoProvider component provides cryptocurrency data to the app
+ * @param {object} props - Component props
+ * @param {React.ReactNode} props.children - Child components
+ * @returns {JSX.Element} Provider component
+ */
 export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // State for cryptocurrency tickers and related data
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [globalData, setGlobalData] = useState<GlobalData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,8 +80,13 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [topGainers, setTopGainers] = useState<Ticker[]>([]);
   const [topLosers, setTopLosers] = useState<Ticker[]>([]);
 
+  // Get singleton instance of the API service
   const coinloreService = CoinloreApiService.getInstance();
 
+  /**
+   * Refresh all cryptocurrency data
+   * Fetches tickers and global market data in parallel
+   */
   const refreshData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -64,16 +101,20 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setGlobalData(globalDataResponse[0]);
       setCurrentPage(0);
       
-      // Usar utilidades para calcular top gainers y losers
+      // Calculate top gainers and losers from the fetched data
       setTopGainers(getTopGainers(allCoins, 10));
       setTopLosers(getTopLosers(allCoins, 10));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al obtener datos');
+      setError(err instanceof Error ? err.message : 'Error fetching data');
     } finally {
       setIsLoading(false);
     }
   }, [coinloreService]);
 
+  /**
+   * Load more cryptocurrencies for infinite scrolling
+   * This function loads the next page of results
+   */
   const loadMore = useCallback(async () => {
     if (isLoading) return;
 
@@ -93,6 +134,11 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [currentPage, isLoading, coinloreService]);
 
+  /**
+   * Search for cryptocurrencies by name, symbol or ID
+   * First searches in locally cached data, then falls back to API if needed
+   * @param {string} query - Search query string
+   */
   const searchCoins = useCallback(async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -118,10 +164,16 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [coinloreService, tickers]);
 
+  /**
+   * Initial data loading when component mounts
+   */
   useEffect(() => {
     refreshData();
   }, [refreshData]);
 
+  /**
+   * Provide the context value to children components
+   */
   return (
     <CryptoContext.Provider
       value={{
