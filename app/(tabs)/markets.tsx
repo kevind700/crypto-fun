@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
-import { Surface, Text, Searchbar, useTheme, Chip } from 'react-native-paper';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Surface, Text, Searchbar, useTheme } from 'react-native-paper';
 import { useCrypto } from '../../contexts/CryptoContext';
 import { Ticker } from '../../services/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import SortModal, { SortOption } from '../../components/common/SortModal';
 
 type SortField = 'rank' | 'price_usd' | 'percent_change_24h' | 'volume24' | 'market_cap_usd';
+
+const sortOptions: SortOption<SortField>[] = [
+  { field: 'rank', label: 'Rank' },
+  { field: 'price_usd', label: 'Price' },
+  { field: 'percent_change_24h', label: 'Change' },
+  { field: 'volume24', label: 'Volume' },
+  { field: 'market_cap_usd', label: 'Mkt Cap' },
+];
 
 const formatValue = (value: number): string => {
   if (value >= 1e12) return (value / 1e12).toFixed(2) + 'T';
@@ -31,12 +39,13 @@ const Markets = () => {
   }, [tickers]);
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortAsc(!sortAsc);
-    } else {
+    if (field !== sortField) {
       setSortField(field);
-      setSortAsc(true);
     }
+  };
+
+  const handleDirectionChange = () => {
+    setSortAsc(!sortAsc);
   };
 
   const handleSearch = (query: string) => {
@@ -66,15 +75,15 @@ const Markets = () => {
     const isPositive = priceChange >= 0;
 
     return (
-      <Surface style={[styles.coinCard, { backgroundColor: theme.colors.surface }]}>
+      <Surface style={styles.coinCard}>
         <View style={styles.coinHeader}>
           <View style={styles.coinInfo}>
             <View style={styles.rankContainer}>
-              <Text style={styles.rank}>#{item.rank}</Text>
+              <Text style={styles.rank}>{item.rank}</Text>
             </View>
             <View>
               <Text variant="titleMedium" style={styles.symbol}>{item.symbol}</Text>
-              <Text variant="bodySmall" style={styles.name} numberOfLines={1}>{item.name}</Text>
+                <Text variant="bodySmall" style={styles.name} numberOfLines={1}>{item.name}</Text>
             </View>
           </View>
           <View style={styles.priceInfo}>
@@ -84,25 +93,46 @@ const Markets = () => {
                 maximumFractionDigits: 6
               })}
             </Text>
-            <Text
-              variant="bodySmall"
-              style={[
-                styles.change,
-                { color: isPositive ? '#22c55e' : '#ef4444' },
-              ]}>
-              {isPositive ? '+' : ''}{item.percent_change_24h}%
-            </Text>
+            <View style={[styles.changeContainer, { backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)' }]}>
+              <MaterialCommunityIcons 
+                name={isPositive ? "trending-up" : "trending-down"} 
+                size={12} 
+                color={isPositive ? '#22c55e' : '#ef4444'} 
+                style={{ marginRight: 4 }}
+              />
+              <Text
+                variant="bodySmall"
+                style={[
+                  styles.change,
+                  { color: isPositive ? '#22c55e' : '#ef4444' },
+                ]}>
+                {isPositive ? '+' : ''}{item.percent_change_24h}%
+              </Text>
+            </View>
           </View>
         </View>
 
         <View style={styles.statsContainer}>
           <View style={styles.stat}>
-            <Text variant="bodySmall" style={styles.statLabel}>Market Cap</Text>
+            <MaterialCommunityIcons 
+              name="chart-pie" 
+              size={16} 
+              color="#60A5FA" 
+              style={styles.statIcon}
+            />
+            <Text variant="bodySmall" style={styles.statLabel}>Mkt Cap</Text>
             <Text variant="bodySmall" style={styles.statValue}>
               ${formatValue(parseFloat(item.market_cap_usd))}
             </Text>
           </View>
+          <View style={styles.statDivider} />
           <View style={styles.stat}>
+            <MaterialCommunityIcons 
+              name="chart-bar" 
+              size={16} 
+              color="#60A5FA" 
+              style={styles.statIcon}
+            />
             <Text variant="bodySmall" style={styles.statLabel}>Volume (24h)</Text>
             <Text variant="bodySmall" style={styles.statValue}>
               ${formatValue(parseFloat(item.volume24))}
@@ -119,43 +149,22 @@ const Markets = () => {
         placeholder="Search coins..."
         onChangeText={handleSearch}
         value={searchQuery}
-        style={styles.searchBar}
+        style={[styles.searchBar, { 
+          backgroundColor: '#1E293B',
+          borderRadius: 12,
+        }]}
+        icon="magnify"
+        iconColor={theme.colors.primary}
+        placeholderTextColor={theme.colors.onSurfaceVariant}
       />
 
-      <View style={styles.filterContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <Chip
-            selected={sortField === 'rank'}
-            onPress={() => handleSort('rank')}
-            style={styles.chip}>
-            Rank {sortField === 'rank' && (sortAsc ? '↑' : '↓')}
-          </Chip>
-          <Chip
-            selected={sortField === 'price_usd'}
-            onPress={() => handleSort('price_usd')}
-            style={styles.chip}>
-            Price {sortField === 'price_usd' && (sortAsc ? '↑' : '↓')}
-          </Chip>
-          <Chip
-            selected={sortField === 'percent_change_24h'}
-            onPress={() => handleSort('percent_change_24h')}
-            style={styles.chip}>
-            Change {sortField === 'percent_change_24h' && (sortAsc ? '↑' : '↓')}
-          </Chip>
-          <Chip
-            selected={sortField === 'volume24'}
-            onPress={() => handleSort('volume24')}
-            style={styles.chip}>
-            Volume {sortField === 'volume24' && (sortAsc ? '↑' : '↓')}
-          </Chip>
-          <Chip
-            selected={sortField === 'market_cap_usd'}
-            onPress={() => handleSort('market_cap_usd')}
-            style={styles.chip}>
-            Market Cap {sortField === 'market_cap_usd' && (sortAsc ? '↑' : '↓')}
-          </Chip>
-        </ScrollView>
-      </View>
+      <SortModal
+        sortOptions={sortOptions}
+        currentSortField={sortField}
+        isAscending={sortAsc}
+        onSortChange={handleSort}
+        onDirectionChange={handleDirectionChange}
+      />
 
       <FlatList
         data={sortedTickers}
@@ -184,28 +193,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   searchBar: {
-    margin: 12,
-    borderRadius: 8,
-    elevation: 2,
-    height: 48,
-  },
-  filterContainer: {
-    paddingHorizontal: 12,
+    margin: 16,
     marginBottom: 8,
-  },
-  chip: {
-    marginRight: 6,
-    height: 36,
+    elevation: 3,
+    height: 48,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   list: {
     padding: 8,
   },
   coinCard: {
-    padding: 12,
+    padding: 16,
     marginHorizontal: 8,
     marginBottom: 8,
-    borderRadius: 12,
-    elevation: 2,
+    borderRadius: 16,
+    elevation: 0,
+    backgroundColor: '#1E293B',
   },
   coinHeader: {
     flexDirection: 'row',
@@ -219,7 +225,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rankContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: '#60A5FA',
     borderRadius: 4,
     paddingHorizontal: 6,
     paddingVertical: 2,
@@ -227,13 +233,15 @@ const styles = StyleSheet.create({
   },
   rank: {
     fontSize: 12,
-    color: '#666',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   symbol: {
     fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   name: {
-    opacity: 0.7,
+    color: '#94A3B8',
     maxWidth: 120,
   },
   priceInfo: {
@@ -241,28 +249,50 @@ const styles = StyleSheet.create({
   },
   price: {
     fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  changeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginTop: 4,
   },
   change: {
     fontWeight: '500',
+    fontSize: 12,
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.1)',
-    paddingTop: 8,
-    marginTop: 8,
+    borderTopColor: '#374151',
+    paddingTop: 12,
+    marginTop: 12,
+    backgroundColor: 'transparent',
   },
   stat: {
     flex: 1,
     alignItems: 'center',
   },
-  statLabel: {
-    opacity: 0.7,
+  statIcon: {
     marginBottom: 4,
+  },
+  statLabel: {
+    color: '#94A3B8',
+    marginBottom: 4,
+    fontSize: 11,
   },
   statValue: {
     fontWeight: '500',
+    color: '#FFFFFF',
+  },
+  statDivider: {
+    width: 1,
+    height: '80%',
+    backgroundColor: '#374151',
+    alignSelf: 'center',
   },
   emptyContainer: {
     flex: 1,

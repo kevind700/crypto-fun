@@ -2,11 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, Linking } from 'react-native';
 import { Surface, Text, Searchbar, useTheme, TouchableRipple, Chip } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { ScrollView } from 'react-native-gesture-handler';
 import CoinloreApiService from '../../services/CoinloreApiService';
 import { Exchange } from '../../services/types';
+import SortModal, { SortOption } from '../../components/common/SortModal';
 
 type SortField = 'rank' | 'volume_usd' | 'active_pairs';
+
+const sortOptions: SortOption<SortField>[] = [
+  { field: 'rank', label: 'Rank' },
+  { field: 'volume_usd', label: 'Volume' },
+  { field: 'active_pairs', label: 'Pairs' },
+];
 
 const formatVolume = (volume: string) => {
   const value = parseFloat(volume);
@@ -43,12 +49,13 @@ const Exchanges = () => {
   };
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortAsc(!sortAsc);
-    } else {
+    if (field !== sortField) {
       setSortField(field);
-      setSortAsc(true);
     }
+  };
+
+  const handleDirectionChange = () => {
+    setSortAsc(!sortAsc);
   };
 
   const filteredExchanges = exchanges.filter(exchange =>
@@ -68,30 +75,27 @@ const Exchanges = () => {
 
     return (
       <TouchableRipple onPress={() => Linking.openURL(item.url)}>
-        <Surface style={[styles.exchangeCard, { backgroundColor: theme.colors.surfaceVariant }]}>
+        <Surface style={styles.exchangeCard}>
           <View style={styles.exchangeHeader}>
             <View style={styles.exchangeInfo}>
-              <Text variant="titleLarge" style={[styles.name, { color: theme.colors.primary }]}>
+              <Text variant="titleLarge" style={styles.name}>
                 {item.name}
               </Text>
               <View style={styles.locationContainer}>
                 <MaterialCommunityIcons 
                   name="map-marker" 
                   size={14} 
-                  color={theme.colors.onSurface} 
+                  color="#94A3B8" 
                   style={styles.locationIcon}
                 />
-                <Text variant="labelMedium" style={{ color: theme.colors.onSurface }}>
+                <Text variant="labelMedium" style={styles.locationText}>
                   {item.country || 'Unknown location'}
                 </Text>
               </View>
             </View>
-            <Chip 
-              mode="flat"
-              style={styles.rankChip}
-              textStyle={{ color: theme.colors.background }}>
-              #{item.rank}
-            </Chip>
+            <View style={styles.rankContainer}>
+              <Text style={styles.rankText}>{item.rank}</Text>
+            </View>
           </View>
 
           <View style={styles.statsContainer}>
@@ -99,21 +103,21 @@ const Exchanges = () => {
               <MaterialCommunityIcons 
                 name="chart-line" 
                 size={20} 
-                color={theme.colors.primary}
+                color="#60A5FA"
               />
-              <Text variant="titleMedium" style={[styles.statValue, { color: theme.colors.primary }]}>
+              <Text variant="titleMedium" style={styles.statValue}>
                 {volume}
               </Text>
               <Text variant="labelSmall" style={styles.statLabel}>Volume (24h)</Text>
             </View>
-            <View style={[styles.statDivider, { backgroundColor: theme.colors.surfaceVariant }]} />
+            <View style={styles.statDivider} />
             <View style={styles.stat}>
               <MaterialCommunityIcons 
                 name="swap-horizontal" 
                 size={20} 
-                color={theme.colors.primary}
+                color="#60A5FA"
               />
-              <Text variant="titleMedium" style={[styles.statValue, { color: theme.colors.primary }]}>
+              <Text variant="titleMedium" style={styles.statValue}>
                 {Number(pairs).toLocaleString()}
               </Text>
               <Text variant="labelSmall" style={styles.statLabel}>Active Pairs</Text>
@@ -122,11 +126,11 @@ const Exchanges = () => {
 
           <View style={styles.footer}>
             <MaterialCommunityIcons 
-              name="arrow-right" 
-              size={20} 
-              color={theme.colors.primary}
+              name="open-in-new" 
+              size={16} 
+              color="#60A5FA"
             />
-            <Text variant="labelMedium" style={{ color: theme.colors.primary }}>
+            <Text variant="labelMedium" style={styles.visitText}>
               Visit Exchange
             </Text>
           </View>
@@ -141,36 +145,22 @@ const Exchanges = () => {
         placeholder="Search exchanges..."
         onChangeText={setSearchQuery}
         value={searchQuery}
-        style={[styles.searchBar, { backgroundColor: theme.colors.surfaceVariant }]}
+        style={[styles.searchBar, { 
+          backgroundColor: '#1E293B',
+          borderRadius: 12,
+        }]}
+        icon="magnify"
         iconColor={theme.colors.primary}
-        placeholderTextColor={theme.colors.onSurface}
+        placeholderTextColor={theme.colors.onSurfaceVariant}
       />
 
-      <View style={styles.filterContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <Chip
-            selected={sortField === 'rank'}
-            onPress={() => handleSort('rank')}
-            style={styles.chip}
-            textStyle={{ color: sortField === 'rank' ? theme.colors.background : theme.colors.onSurface }}>
-            Rank {sortField === 'rank' && (sortAsc ? '↑' : '↓')}
-          </Chip>
-          <Chip
-            selected={sortField === 'volume_usd'}
-            onPress={() => handleSort('volume_usd')}
-            style={styles.chip}
-            textStyle={{ color: sortField === 'volume_usd' ? theme.colors.background : theme.colors.onSurface }}>
-            Volume {sortField === 'volume_usd' && (sortAsc ? '↑' : '↓')}
-          </Chip>
-          <Chip
-            selected={sortField === 'active_pairs'}
-            onPress={() => handleSort('active_pairs')}
-            style={styles.chip}
-            textStyle={{ color: sortField === 'active_pairs' ? theme.colors.background : theme.colors.onSurface }}>
-            Pairs {sortField === 'active_pairs' && (sortAsc ? '↑' : '↓')}
-          </Chip>
-        </ScrollView>
-      </View>
+      <SortModal
+        sortOptions={sortOptions}
+        currentSortField={sortField}
+        isAscending={sortAsc}
+        onSortChange={handleSort}
+        onDirectionChange={handleDirectionChange}
+      />
 
       <FlatList
         data={sortedExchanges}
@@ -202,16 +192,13 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     margin: 16,
-    elevation: 4,
-    borderRadius: 12,
-  },
-  filterContainer: {
-    paddingHorizontal: 16,
     marginBottom: 8,
-  },
-  chip: {
-    marginRight: 8,
-    borderRadius: 8,
+    elevation: 3,
+    height: 48,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   list: {
     padding: 16,
@@ -219,8 +206,8 @@ const styles = StyleSheet.create({
   exchangeCard: {
     marginBottom: 12,
     borderRadius: 16,
-    elevation: 2,
     overflow: 'hidden',
+    backgroundColor: '#1E293B',
   },
   exchangeHeader: {
     flexDirection: 'row',
@@ -233,6 +220,8 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: '600',
+    color: '#60A5FA',
+    fontSize: 18,
   },
   locationContainer: {
     flexDirection: 'row',
@@ -242,16 +231,29 @@ const styles = StyleSheet.create({
   locationIcon: {
     marginRight: 4,
   },
-  rankChip: {
-    backgroundColor: '#60a5fa',
-    borderRadius: 8,
+  locationText: {
+    color: '#94A3B8',
+  },
+  rankContainer: {
+    backgroundColor: '#1d4ed8',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 28,
+  },
+  rankText: {
+    color: '#FFFFFF',
+    fontWeight: '500',
+    fontSize: 13,
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 16,
     paddingHorizontal: 8,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    backgroundColor: '#161E2E',
   },
   stat: {
     flex: 1,
@@ -259,23 +261,27 @@ const styles = StyleSheet.create({
   },
   statDivider: {
     width: 1,
-    height: '100%',
-    opacity: 0.1,
+    height: '80%',
+    backgroundColor: '#374151',
   },
   statLabel: {
-    opacity: 0.7,
+    color: '#94A3B8',
     marginTop: 4,
   },
   statValue: {
     fontWeight: '600',
     marginTop: 4,
+    color: '#FFFFFF',
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 12,
-    gap: 8,
+    gap: 6,
+  },
+  visitText: {
+    color: '#60A5FA',
   },
   emptyContainer: {
     flex: 1,
