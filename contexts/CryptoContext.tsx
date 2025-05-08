@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import CoinloreApiService from '../services/CoinloreApiService';
-import { Ticker, GlobalData, Exchange } from '../services/types';
+import { Ticker, GlobalData } from '../services/types';
 
 interface CryptoContextType {
   tickers: Ticker[];
   globalData: GlobalData | null;
-  exchanges: Exchange[];
   isLoading: boolean;
   error: string | null;
   refreshData: () => Promise<void>;
@@ -15,12 +14,13 @@ interface CryptoContextType {
   setSelectedCoin: (coin: Ticker | null) => void;
   loadMore: () => Promise<void>;
   currentPage: number;
+  topGainers: Ticker[];
+  topLosers: Ticker[];
 }
 
 const CryptoContext = createContext<CryptoContextType>({
   tickers: [],
   globalData: null,
-  exchanges: [],
   isLoading: false,
   error: null,
   refreshData: async () => {},
@@ -30,6 +30,8 @@ const CryptoContext = createContext<CryptoContextType>({
   setSelectedCoin: () => {},
   loadMore: async () => {},
   currentPage: 0,
+  topGainers: [],
+  topLosers: [],
 });
 
 export const useCrypto = () => useContext(CryptoContext);
@@ -37,12 +39,13 @@ export const useCrypto = () => useContext(CryptoContext);
 export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [globalData, setGlobalData] = useState<GlobalData | null>(null);
-  const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchResults, setSearchResults] = useState<Ticker[]>([]);
   const [selectedCoin, setSelectedCoin] = useState<Ticker | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [topGainers, setTopGainers] = useState<Ticker[]>([]);
+  const [topLosers, setTopLosers] = useState<Ticker[]>([]);
 
   const coinloreService = CoinloreApiService.getInstance();
 
@@ -50,16 +53,22 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setIsLoading(true);
     setError(null);
     try {
-      const [tickersResponse, globalDataResponse, exchangesResponse] = await Promise.all([
-        coinloreService.getTickers({ start: 0, limit: 50 }),
+      const [tickersResponse, globalDataResponse] = await Promise.all([
+        coinloreService.getTickers({ start: 0, limit: 100 }),
         coinloreService.getGlobalData(),
-        coinloreService.getExchanges({ start: 0, limit: 50 }),
       ]);
 
-      setTickers(tickersResponse.data);
+      const allCoins = tickersResponse.data;
+      setTickers(allCoins);
       setGlobalData(globalDataResponse[0]);
-      setExchanges(exchangesResponse);
       setCurrentPage(0);
+      
+      // Calculate top gainers and losers
+      const sortedByGain = [...allCoins].sort((a, b) => 
+        parseFloat(b.percent_change_24h) - parseFloat(a.percent_change_24h)
+      );
+      setTopGainers(sortedByGain.slice(0, 10));
+      setTopLosers(sortedByGain.slice(-10).reverse());
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
     } finally {
@@ -112,7 +121,6 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       value={{
         tickers,
         globalData,
-        exchanges,
         isLoading,
         error,
         refreshData,
@@ -122,6 +130,8 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setSelectedCoin,
         loadMore,
         currentPage,
+        topGainers,
+        topLosers,
       }}
     >
       {children}

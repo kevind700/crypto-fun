@@ -38,24 +38,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="exchanges"
-        options={{
-          title: 'Exchanges',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bank" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="social"
-        options={{
-          title: 'Social',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="trending-up" size={size} color={color} />
-          ),
-        }}
-      />
+
     </Tabs>
   );
 }

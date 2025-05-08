@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import { Surface, Text, Searchbar, useTheme, Chip } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -8,12 +8,27 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 type SortField = 'rank' | 'price_usd' | 'percent_change_24h' | 'volume24' | 'market_cap_usd';
 
+const formatValue = (value: number): string => {
+  if (value >= 1e12) return (value / 1e12).toFixed(2) + 'T';
+  if (value >= 1e9) return (value / 1e9).toFixed(2) + 'B';
+  if (value >= 1e6) return (value / 1e6).toFixed(2) + 'M';
+  if (value >= 1e3) return (value / 1e3).toFixed(2) + 'K';
+  return value.toFixed(2);
+};
+
 const Markets = () => {
   const theme = useTheme();
-  const { tickers, searchCoins } = useCrypto();
+  const { tickers } = useCrypto();
   const [sortField, setSortField] = useState<SortField>('rank');
   const [sortAsc, setSortAsc] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filteredTickers, setFilteredTickers] = useState<Ticker[]>([]);
+
+  useEffect(() => {
+    if (tickers) {
+      setFilteredTickers(tickers);
+    }
+  }, [tickers]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -24,7 +39,22 @@ const Markets = () => {
     }
   };
 
-  const sortedTickers = [...(tickers || [])].sort((a, b) => {
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (!query.trim()) {
+      setFilteredTickers(tickers || []);
+    } else {
+      const lowercaseQuery = query.toLowerCase();
+      const filtered = (tickers || []).filter(
+        (coin) =>
+          coin.name.toLowerCase().includes(lowercaseQuery) ||
+          coin.symbol.toLowerCase().includes(lowercaseQuery)
+      );
+      setFilteredTickers(filtered);
+    }
+  };
+
+  const sortedTickers = [...filteredTickers].sort((a, b) => {
     const multiplier = sortAsc ? 1 : -1;
     const aValue = parseFloat(a[sortField] as string) || 0;
     const bValue = parseFloat(b[sortField] as string) || 0;
@@ -39,12 +69,20 @@ const Markets = () => {
       <Surface style={[styles.coinCard, { backgroundColor: theme.colors.surface }]}>
         <View style={styles.coinHeader}>
           <View style={styles.coinInfo}>
-            <Text variant="titleMedium" style={styles.symbol}>{item.symbol}</Text>
-            <Text variant="bodySmall" style={styles.name}>{item.name}</Text>
+            <View style={styles.rankContainer}>
+              <Text style={styles.rank}>#{item.rank}</Text>
+            </View>
+            <View>
+              <Text variant="titleMedium" style={styles.symbol}>{item.symbol}</Text>
+              <Text variant="bodySmall" style={styles.name} numberOfLines={1}>{item.name}</Text>
+            </View>
           </View>
           <View style={styles.priceInfo}>
             <Text variant="titleMedium" style={styles.price}>
-              ${parseFloat(item.price_usd).toLocaleString()}
+              ${Number(parseFloat(item.price_usd)).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6
+              })}
             </Text>
             <Text
               variant="bodySmall"
@@ -60,19 +98,15 @@ const Markets = () => {
         <View style={styles.statsContainer}>
           <View style={styles.stat}>
             <Text variant="bodySmall" style={styles.statLabel}>Market Cap</Text>
-            <Text variant="bodyMedium" style={styles.statValue}>
-              ${parseFloat(item.market_cap_usd).toLocaleString()}
+            <Text variant="bodySmall" style={styles.statValue}>
+              ${formatValue(parseFloat(item.market_cap_usd))}
             </Text>
           </View>
           <View style={styles.stat}>
             <Text variant="bodySmall" style={styles.statLabel}>Volume (24h)</Text>
-            <Text variant="bodyMedium" style={styles.statValue}>
-              ${parseFloat(item.volume24).toLocaleString()}
+            <Text variant="bodySmall" style={styles.statValue}>
+              ${formatValue(parseFloat(item.volume24))}
             </Text>
-          </View>
-          <View style={styles.stat}>
-            <Text variant="bodySmall" style={styles.statLabel}>Rank</Text>
-            <Text variant="bodyMedium" style={styles.statValue}>#{item.rank}</Text>
           </View>
         </View>
       </Surface>
@@ -83,10 +117,7 @@ const Markets = () => {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Searchbar
         placeholder="Search coins..."
-        onChangeText={query => {
-          setSearchQuery(query);
-          searchCoins(query);
-        }}
+        onChangeText={handleSearch}
         value={searchQuery}
         style={styles.searchBar}
       />
@@ -153,22 +184,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   searchBar: {
-    margin: 16,
-    elevation: 4,
+    margin: 12,
+    borderRadius: 8,
+    elevation: 2,
+    height: 48,
   },
   filterContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     marginBottom: 8,
   },
   chip: {
-    marginRight: 8,
+    marginRight: 6,
+    height: 36,
   },
   list: {
-    padding: 16,
+    padding: 8,
   },
   coinCard: {
-    padding: 16,
-    marginBottom: 12,
+    padding: 12,
+    marginHorizontal: 8,
+    marginBottom: 8,
     borderRadius: 12,
     elevation: 2,
   },
@@ -180,12 +215,26 @@ const styles = StyleSheet.create({
   },
   coinInfo: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rankContainer: {
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginRight: 8,
+  },
+  rank: {
+    fontSize: 12,
+    color: '#666',
   },
   symbol: {
     fontWeight: 'bold',
   },
   name: {
     opacity: 0.7,
+    maxWidth: 120,
   },
   priceInfo: {
     alignItems: 'flex-end',
@@ -201,7 +250,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,0.1)',
-    paddingTop: 12,
+    paddingTop: 8,
+    marginTop: 8,
   },
   stat: {
     flex: 1,

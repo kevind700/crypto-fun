@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
-import Svg, { G, Circle } from 'react-native-svg';
+import Svg, { G, Circle, Text as SvgText } from 'react-native-svg';
 
 interface DonutChartProps {
   data: {
@@ -27,20 +27,32 @@ const DonutChart: React.FC<DonutChartProps> = ({
   const centerX = width / 2;
   const centerY = height / 2;
 
+  // Create label data for the legend
+  const legendItems = data.map((item) => {
+    const percentage = (item.value / total) * 100;
+    return {
+      color: item.color,
+      label: item.label,
+      percentage: percentage.toFixed(1),
+    };
+  });
+
+  // Calculate circle segments
   let currentAngle = 0;
   const circles = data.map((item, index) => {
     const percentage = (item.value / total) * 100;
     const angle = (percentage / 100) * 360;
-    const x = centerX + radius * Math.cos(((currentAngle + angle / 2) * Math.PI) / 180);
-    const y = centerY + radius * Math.sin(((currentAngle + angle / 2) * Math.PI) / 180);
-
-    // Create the SVG arc
+    
+    // Calculate angle for labels
+    const midAngle = ((currentAngle + (currentAngle + angle)) / 2) * (Math.PI / 180);
+    const labelRadius = radius + 10;
+    const labelX = centerX + labelRadius * Math.cos(midAngle);
+    const labelY = centerY + labelRadius * Math.sin(midAngle);
+    
+    // Calculate the arc
     const startAngle = currentAngle;
     currentAngle += angle;
-    const endAngle = currentAngle;
-
-    // All path-related calculations removed as they were unused
-
+    
     return (
       <G key={index}>
         <Circle
@@ -53,18 +65,15 @@ const DonutChart: React.FC<DonutChartProps> = ({
           strokeDashoffset={-(startAngle / 360) * (2 * Math.PI * radius)}
           fill="none"
         />
-        <Text
-          style={[
-            styles.label,
-            {
-              position: 'absolute',
-              left: x - 40,
-              top: y - 10,
-              color: theme.colors.onSurface,
-            },
-          ]}>
-          {`${item.label}\n${percentage.toFixed(1)}%`}
-        </Text>
+        <SvgText
+          x={labelX}
+          y={labelY}
+          fontSize="12"
+          fill={theme.colors.onSurface.toString()}
+          textAnchor="middle"
+          alignmentBaseline="middle">
+          {percentage > 5 ? `${percentage.toFixed(0)}%` : ''}
+        </SvgText>
       </G>
     );
   });
@@ -74,6 +83,16 @@ const DonutChart: React.FC<DonutChartProps> = ({
       <Svg width={width} height={height}>
         {circles}
       </Svg>
+      <View style={styles.legend}>
+        {legendItems.map((item, index) => (
+          <View key={index} style={styles.legendItem}>
+            <View style={[styles.colorBox, { backgroundColor: item.color }]} />
+            <Text style={styles.legendText}>
+              {item.label}: {item.percentage}%
+            </Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 };
@@ -83,9 +102,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  label: {
+  legend: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginTop: 16,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 8,
+    marginVertical: 4,
+  },
+  colorBox: {
+    width: 12,
+    height: 12,
+    borderRadius: 2,
+    marginRight: 6,
+  },
+  legendText: {
     fontSize: 12,
-    textAlign: 'center',
   },
 });
 

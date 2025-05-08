@@ -24,9 +24,12 @@ const Exchanges = () => {
     try {
       const service = CoinloreApiService.getInstance();
       const data = await service.getExchanges();
-      setExchanges(data);
+      // Convert object to array
+      const exchangesArray = Object.values(data || {});
+      setExchanges(exchangesArray);
     } catch (error) {
       console.error('Failed to load exchanges:', error);
+      setExchanges([]);
     } finally {
       setIsLoading(false);
     }

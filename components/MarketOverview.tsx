@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, ActivityIndicator } from 'react-native';
 import { useCrypto } from '../contexts/CryptoContext';
 import { Ticker } from '../services/types';
-import { useTheme, Surface } from 'react-native-paper';
+import { Surface } from 'react-native-paper';
 
 // Inline component implementation since the file doesn't exist
 const CoinItem = ({ coin }: { coin: Ticker }) => {
