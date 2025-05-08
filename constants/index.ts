@@ -1,0 +1,49 @@
+export const COLORS = {
+  PRIMARY: '#4CAF50',
+  SECONDARY: '#FF5252',
+  BACKGROUND: '#f5f5f5',
+  SURFACE: '#FFFFFF',
+  TEXT_PRIMARY: '#333333',
+  TEXT_SECONDARY: '#666666',
+  BORDER: '#e0e0e0',
+  CARD_BACKGROUND: '#f9f9f9',
+  POSITIVE: '#4CAF50',
+  NEGATIVE: '#FF5252',
+  LOADING: '#0000ff',
+};
+
+export const LAYOUT = {
+  SPACING_XS: 4,
+  SPACING_SM: 8,
+  SPACING_MD: 12,
+  SPACING_LG: 16,
+  SPACING_XL: 20,
+  BORDER_RADIUS_SM: 4,
+  BORDER_RADIUS_MD: 8,
+  BORDER_RADIUS_LG: 12,
+};
+
+export const TYPOGRAPHY = {
+  FONT_SIZE_XS: 12,
+  FONT_SIZE_SM: 14,
+  FONT_SIZE_MD: 16,
+  FONT_SIZE_LG: 18,
+  FONT_SIZE_XL: 20,
+  FONT_SIZE_XXL: 24,
+  FONT_WEIGHT_REGULAR: 'normal' as const,
+  FONT_WEIGHT_MEDIUM: '500' as const,
+  FONT_WEIGHT_BOLD: 'bold' as const,
+};
+
+export const API = {
+  BASE_URL: 'https://api.coinlore.net/api',
+  DEFAULT_LIMIT: 100,
+  DEFAULT_START: 0,
+  TIMEOUT: 30000,
+};
+
+export const LIMITS = {
+  TOP_MOVERS: 10,
+  SEARCH_RESULTS_MIN: 5,
+  DEFAULT_PAGE_SIZE: 50,
+}; 

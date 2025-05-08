@@ -1,10 +1,12 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
-import { FlatList, Linking, StyleSheet, View } from 'react-native';
+import React, { memo, useEffect, useState } from 'react';
+import { FlatList, Linking, View } from 'react-native';
 import { Searchbar, Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
 import SortModal, { SortOption } from '../../components/common/SortModal';
 import CoinloreApiService from '../../services/CoinloreApiService';
 import { Exchange } from '../../services/types';
+import { styles } from './styles/exchanges.styles';
+import { formatVolume } from './utils/formatters';
 
 type SortField = 'rank' | 'volume_usd' | 'active_pairs';
 
@@ -13,13 +15,88 @@ const sortOptions: SortOption<SortField>[] = [
   { field: 'active_pairs', label: 'Pairs' },
 ];
 
-const formatVolume = (volume: string) => {
-  const value = parseFloat(volume);
-  if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
-  if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
-  if (value >= 1e3) return `$${(value / 1e3).toFixed(2)}K`;
-  return `$${value.toFixed(2)}`;
-};
+const ExchangeItem = memo(({ item }: { item: Exchange }) => {
+  const volume = formatVolume(item.volume_usd);
+  const pairs = `${item.active_pairs}`;
+
+  return (
+    <TouchableRipple onPress={() => Linking.openURL(item.url)}>
+      <Surface style={styles.exchangeCard}>
+        <View style={styles.exchangeHeader}>
+          <View style={styles.exchangeInfo}>
+            <Text variant="titleLarge" style={styles.name}>
+              {item.name}
+            </Text>
+            <View style={styles.locationContainer}>
+              <MaterialCommunityIcons 
+                name="map-marker" 
+                size={14} 
+                color="#94A3B8" 
+                style={styles.locationIcon}
+              />
+              <Text variant="labelMedium" style={styles.locationText}>
+                {item.country || 'Unknown location'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.statsContainer}>
+          <View style={styles.stat}>
+            <MaterialCommunityIcons 
+              name="chart-line" 
+              size={20} 
+              color="#60A5FA"
+            />
+            <Text variant="titleMedium" style={styles.statValue}>
+              {volume}
+            </Text>
+            <Text variant="labelSmall" style={styles.statLabel}>Volume (24h)</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.stat}>
+            <MaterialCommunityIcons 
+              name="swap-horizontal" 
+              size={20} 
+              color="#60A5FA"
+            />
+            <Text variant="titleMedium" style={styles.statValue}>
+              {Number(pairs).toLocaleString()}
+            </Text>
+            <Text variant="labelSmall" style={styles.statLabel}>Active Pairs</Text>
+          </View>
+        </View>
+
+        <View style={styles.footer}>
+          <MaterialCommunityIcons 
+            name="open-in-new" 
+            size={16} 
+            color="#60A5FA"
+          />
+          <Text variant="labelMedium" style={styles.visitText}>
+            Visit Exchange
+          </Text>
+        </View>
+      </Surface>
+    </TouchableRipple>
+  );
+});
+
+const EmptyListComponent = memo(() => {
+  const theme = useTheme();
+  return (
+    <View style={styles.emptyContainer}>
+      <MaterialCommunityIcons
+        name="alert-circle-outline"
+        size={48}
+        color={theme.colors.error}
+      />
+      <Text variant="titleMedium" style={[styles.emptyText, { color: theme.colors.error }]}>
+        No exchanges found
+      </Text>
+    </View>
+  );
+});
 
 const Exchanges = () => {
   const theme = useTheme();
@@ -68,73 +145,6 @@ const Exchanges = () => {
     return (aValue - bValue) * multiplier;
   });
 
-  const renderExchange = ({ item }: { item: Exchange }) => {
-    const volume = formatVolume(item.volume_usd);
-    const pairs = `${item.active_pairs}`;
-
-    return (
-      <TouchableRipple onPress={() => Linking.openURL(item.url)}>
-        <Surface style={styles.exchangeCard}>
-          <View style={styles.exchangeHeader}>
-            <View style={styles.exchangeInfo}>
-              <Text variant="titleLarge" style={styles.name}>
-                {item.name}
-              </Text>
-              <View style={styles.locationContainer}>
-                <MaterialCommunityIcons 
-                  name="map-marker" 
-                  size={14} 
-                  color="#94A3B8" 
-                  style={styles.locationIcon}
-                />
-                <Text variant="labelMedium" style={styles.locationText}>
-                  {item.country || 'Unknown location'}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.statsContainer}>
-            <View style={styles.stat}>
-              <MaterialCommunityIcons 
-                name="chart-line" 
-                size={20} 
-                color="#60A5FA"
-              />
-              <Text variant="titleMedium" style={styles.statValue}>
-                {volume}
-              </Text>
-              <Text variant="labelSmall" style={styles.statLabel}>Volume (24h)</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.stat}>
-              <MaterialCommunityIcons 
-                name="swap-horizontal" 
-                size={20} 
-                color="#60A5FA"
-              />
-              <Text variant="titleMedium" style={styles.statValue}>
-                {Number(pairs).toLocaleString()}
-              </Text>
-              <Text variant="labelSmall" style={styles.statLabel}>Active Pairs</Text>
-            </View>
-          </View>
-
-          <View style={styles.footer}>
-            <MaterialCommunityIcons 
-              name="open-in-new" 
-              size={16} 
-              color="#60A5FA"
-            />
-            <Text variant="labelMedium" style={styles.visitText}>
-              Visit Exchange
-            </Text>
-          </View>
-        </Surface>
-      </TouchableRipple>
-    );
-  };
-
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.headerContainer}>
@@ -174,155 +184,16 @@ const Exchanges = () => {
 
       <FlatList
         data={sortedExchanges}
-        renderItem={renderExchange}
+        renderItem={({ item }) => <ExchangeItem item={item} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         refreshing={isLoading}
         onRefresh={loadExchanges}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons
-              name="alert-circle-outline"
-              size={48}
-              color={theme.colors.error}
-            />
-            <Text variant="titleMedium" style={[styles.emptyText, { color: theme.colors.error }]}>
-              No exchanges found
-            </Text>
-          </View>
-        }
+        ListEmptyComponent={<EmptyListComponent />}
       />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  headerContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 10,
-  },
-  headerControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sortInfoContainer: {
-    marginTop: 8,
-    marginBottom: 2,
-  },
-  sortInfoText: {
-    color: '#94A3B8',
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  searchBar: {
-    flex: 1,
-    marginRight: 10,
-    height: 50,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(96, 165, 250, 0.15)',
-  },
-  list: {
-    padding: 16,
-    paddingBottom: 24,
-  },
-  exchangeCard: {
-    marginBottom: 12,
-    borderRadius: 18,
-    overflow: 'hidden',
-    backgroundColor: '#1E293B',
-    borderWidth: 1,
-    borderColor: 'rgba(96, 165, 250, 0.1)',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-  },
-  exchangeHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    padding: 16,
-  },
-  exchangeInfo: {
-    flex: 1,
-  },
-  name: {
-    fontWeight: '600',
-    color: '#60A5FA',
-    fontSize: 18,
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  locationIcon: {
-    marginRight: 4,
-  },
-  locationText: {
-    color: '#94A3B8',
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 16,
-    paddingHorizontal: 8,
-    backgroundColor: 'rgba(22, 30, 46, 0.7)',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(55, 65, 81, 0.3)',
-  },
-  stat: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statDivider: {
-    width: 1,
-    height: '80%',
-    backgroundColor: 'rgba(55, 65, 81, 0.4)',
-  },
-  statLabel: {
-    color: '#94A3B8',
-    marginTop: 4,
-  },
-  statValue: {
-    fontWeight: '600',
-    marginTop: 4,
-    color: '#FFFFFF',
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: 12,
-    gap: 6,
-    backgroundColor: 'rgba(30, 41, 59, 0.5)',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(55, 65, 81, 0.2)',
-  },
-  visitText: {
-    color: '#60A5FA',
-    fontWeight: '500',
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  emptyText: {
-    marginTop: 12,
-  },
-});
-
-export default Exchanges;
+export default memo(Exchanges);

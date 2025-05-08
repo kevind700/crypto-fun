@@ -1,0 +1,110 @@
+import { StyleSheet } from 'react-native';
+import { COLORS, LAYOUT, TYPOGRAPHY } from '../../../constants';
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerContainer: {
+    paddingHorizontal: LAYOUT.SPACING_LG,
+    paddingVertical: LAYOUT.SPACING_MD,
+  },
+  headerControls: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  searchBar: {
+    flex: 1,
+    marginRight: LAYOUT.SPACING_MD,
+    height: 40,
+  },
+  sortInfoContainer: {
+    marginTop: LAYOUT.SPACING_SM,
+    paddingVertical: LAYOUT.SPACING_XS,
+    paddingHorizontal: LAYOUT.SPACING_SM,
+    backgroundColor: 'rgba(96, 165, 250, 0.1)',
+    borderRadius: LAYOUT.BORDER_RADIUS_MD,
+    alignSelf: 'flex-start',
+  },
+  sortInfoText: {
+    fontSize: TYPOGRAPHY.FONT_SIZE_SM,
+    color: '#60A5FA',
+  },
+  list: {
+    padding: LAYOUT.SPACING_LG,
+  },
+  exchangeCard: {
+    padding: LAYOUT.SPACING_LG,
+    marginBottom: LAYOUT.SPACING_LG,
+    borderRadius: LAYOUT.BORDER_RADIUS_LG,
+  },
+  exchangeHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: LAYOUT.SPACING_MD,
+  },
+  exchangeInfo: {
+    flex: 1,
+  },
+  name: {
+    fontWeight: TYPOGRAPHY.FONT_WEIGHT_BOLD,
+    marginBottom: LAYOUT.SPACING_XS,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationIcon: {
+    marginRight: LAYOUT.SPACING_XS,
+  },
+  locationText: {
+    color: COLORS.TEXT_SECONDARY,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: LAYOUT.SPACING_LG,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+    marginBottom: LAYOUT.SPACING_MD,
+  },
+  stat: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statValue: {
+    fontWeight: TYPOGRAPHY.FONT_WEIGHT_BOLD,
+    marginVertical: LAYOUT.SPACING_XS,
+  },
+  statLabel: {
+    color: COLORS.TEXT_SECONDARY,
+  },
+  statDivider: {
+    width: 1,
+    height: '80%',
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    alignSelf: 'center',
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  visitText: {
+    color: '#60A5FA',
+    marginLeft: LAYOUT.SPACING_XS,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: LAYOUT.SPACING_XL,
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: LAYOUT.SPACING_MD,
+  },
+}); 

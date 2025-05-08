@@ -1,12 +1,19 @@
+import {
+  getTopGainers,
+  getTopLosers,
+  searchCoins,
+  sortTickersByMarketCap,
+  sortTickersByVolume
+} from '../utils/dataTransformers';
 import BaseApiService from './BaseApiService';
 import {
-  Ticker,
-  GlobalData,
-  Exchange,
-  SocialStats,
   CoinMarket,
-  TickersParams,
+  Exchange,
   ExchangesParams,
+  GlobalData,
+  SocialStats,
+  Ticker,
+  TickersParams,
 } from './types';
 
 class CoinloreApiService extends BaseApiService {
@@ -82,41 +89,27 @@ class CoinloreApiService extends BaseApiService {
   // Custom utility methods
   async searchCoins(query: string): Promise<Ticker[]> {
     const { data } = await this.getTickers({ limit: 2000 });
-    const searchQuery = query.toLowerCase();
-    return data.filter(
-      (coin) =>
-        coin.name.toLowerCase().includes(searchQuery) ||
-        coin.symbol.toLowerCase().includes(searchQuery) ||
-        coin.nameid.toLowerCase().includes(searchQuery)
-    );
+    return searchCoins(data, query);
   }
 
   async getTopGainers(limit: number = 10): Promise<Ticker[]> {
     const { data } = await this.getTickers({ limit: 100 });
-    return data
-      .sort((a, b) => parseFloat(b.percent_change_24h) - parseFloat(a.percent_change_24h))
-      .slice(0, limit);
+    return getTopGainers(data, limit);
   }
 
   async getTopLosers(limit: number = 10): Promise<Ticker[]> {
     const { data } = await this.getTickers({ limit: 100 });
-    return data
-      .sort((a, b) => parseFloat(a.percent_change_24h) - parseFloat(b.percent_change_24h))
-      .slice(0, limit);
+    return getTopLosers(data, limit);
   }
 
   async getTopByVolume(limit: number = 10): Promise<Ticker[]> {
     const { data } = await this.getTickers({ limit: 100 });
-    return data
-      .sort((a, b) => parseFloat(b.volume24) - parseFloat(a.volume24))
-      .slice(0, limit);
+    return sortTickersByVolume(data).slice(0, limit);
   }
 
   async getTopByMarketCap(limit: number = 10): Promise<Ticker[]> {
     const { data } = await this.getTickers({ limit: 100 });
-    return data
-      .sort((a, b) => parseFloat(b.market_cap_usd) - parseFloat(a.market_cap_usd))
-      .slice(0, limit);
+    return sortTickersByMarketCap(data).slice(0, limit);
   }
 }
 

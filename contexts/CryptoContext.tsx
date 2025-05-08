@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import CoinloreApiService from '../services/CoinloreApiService';
-import { Ticker, GlobalData } from '../services/types';
+import { GlobalData, Ticker } from '../services/types';
+import { searchCoins as filterCoins, getTopGainers, getTopLosers } from '../utils/dataTransformers';
 
 interface CryptoContextType {
   tickers: Ticker[];
@@ -63,14 +64,11 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setGlobalData(globalDataResponse[0]);
       setCurrentPage(0);
       
-      // Calculate top gainers and losers
-      const sortedByGain = [...allCoins].sort((a, b) => 
-        parseFloat(b.percent_change_24h) - parseFloat(a.percent_change_24h)
-      );
-      setTopGainers(sortedByGain.slice(0, 10));
-      setTopLosers(sortedByGain.slice(-10).reverse());
+      // Usar utilidades para calcular top gainers y losers
+      setTopGainers(getTopGainers(allCoins, 10));
+      setTopLosers(getTopLosers(allCoins, 10));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
+      setError(err instanceof Error ? err.message : 'Error al obtener datos');
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +87,7 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setTickers(prev => [...prev, ...data]);
       setCurrentPage(nextPage);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while loading more data');
+      setError(err instanceof Error ? err.message : 'Error al cargar más datos');
     } finally {
       setIsLoading(false);
     }
@@ -103,14 +101,22 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     setIsLoading(true);
     try {
-      const results = await coinloreService.searchCoins(query);
-      setSearchResults(results);
+      // Usar nuestra utilidad para buscar en los datos ya cargados
+      const results = filterCoins(tickers, query);
+      
+      // Si no hay suficientes resultados locales, buscar en la API
+      if (results.length < 5) {
+        const apiResults = await coinloreService.searchCoins(query);
+        setSearchResults(apiResults);
+      } else {
+        setSearchResults(results);
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while searching');
+      setError(err instanceof Error ? err.message : 'Error al buscar');
     } finally {
       setIsLoading(false);
     }
-  }, [coinloreService]);
+  }, [coinloreService, tickers]);
 
   useEffect(() => {
     refreshData();
