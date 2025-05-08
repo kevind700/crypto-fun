@@ -37,3 +37,18 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Jest testing
+coverage/
+.jest/
+__snapshots__/
+
+# Temporary files
+*.log
+*.tmp
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo

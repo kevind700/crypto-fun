@@ -1,0 +1,28 @@
+# Archivos de pruebas
+__tests__/
+jest.config.js
+coverage/
+
+# Configuración de desarrollo
+.vscode/
+.idea/
+.eslintrc
+.eslintignore
+.prettierrc
+.gitattributes
+.github/
+
+# Archivos de fuente y documentación
+docs/
+*.md
+!README.md
+!CHANGELOG.md
+!LICENSE.md
+
+# Archivos temporales
+*.log
+*.tmp
+
+# Recursos gráficos del proyecto
+assets/
+!assets/icons/ 
