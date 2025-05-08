@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Modal, FlatList, Dimensions } from 'react-native';
-import { Text, Surface, Portal, Button } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { Dimensions, FlatList, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, Portal, Surface, Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type SortOption<T extends string> = {
@@ -68,34 +68,17 @@ function SortModal<T extends string>({
   return (
     <>
       <TouchableOpacity 
-        style={styles.sortButton}
+        style={[
+          styles.sortButton, 
+          (currentSortField !== 'rank' || !isAscending) && styles.activeSortButton
+        ]}
         onPress={openModal}
       >
-        <View style={styles.sortButtonContent}>
-          <View style={styles.sortTypeContainer}>
-            <MaterialCommunityIcons 
-              name="sort" 
-              size={18} 
-              color="#60A5FA" 
-            />
-            <Text style={styles.sortButtonText}>
-              {currentOption?.label || 'Sort by'}
-            </Text>
-          </View>
-          <View style={styles.sortDirectionContainer}>
-            <MaterialCommunityIcons 
-              name={isAscending ? "sort-ascending" : "sort-descending"} 
-              size={18} 
-              color="#60A5FA" 
-            />
-            <MaterialCommunityIcons 
-              name="chevron-down" 
-              size={16} 
-              color="#94A3B8" 
-              style={styles.chevronIcon}
-            />
-          </View>
-        </View>
+        <MaterialCommunityIcons 
+          name={isAscending ? "sort-ascending" : "sort-descending"} 
+          size={24} 
+          color="#60A5FA" 
+        />
       </TouchableOpacity>
 
       <Portal>
@@ -128,6 +111,7 @@ function SortModal<T extends string>({
                 renderItem={renderSortOption}
                 keyExtractor={(item) => item.field}
                 style={styles.optionsList}
+                showsVerticalScrollIndicator={false}
               />
 
               <View style={styles.directionContainer}>
@@ -183,6 +167,7 @@ function SortModal<T extends string>({
               <Button 
                 mode="contained" 
                 style={styles.closeButton}
+                labelStyle={{ fontWeight: 'bold', fontSize: 16 }}
                 onPress={() => {
                   if (tempSortField !== currentSortField) {
                     onSortChange(tempSortField);
@@ -193,7 +178,7 @@ function SortModal<T extends string>({
                   closeModal();
                 }}
               >
-                Done
+                Apply
               </Button>
             </Surface>
           </View>
@@ -208,44 +193,29 @@ const { height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   sortButton: {
     backgroundColor: '#1A2234',
-    borderRadius: 10,
+    borderRadius: 18,
     paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginHorizontal: 16,
-    marginVertical: 8,
+    paddingVertical: 12,
+    marginVertical: 0,
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#2A3346',
+    borderColor: 'rgba(96, 165, 250, 0.3)',
     elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
-    shadowRadius: 3,
+    shadowRadius: 4,
   },
-  sortButtonContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sortTypeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sortDirectionContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sortButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    marginLeft: 8,
-    fontSize: 15,
-  },
-  chevronIcon: {
-    marginLeft: 6,
+  activeSortButton: {
+    backgroundColor: 'rgba(59, 130, 246, 0.3)',
+    borderColor: 'rgba(96, 165, 250, 0.5)',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'flex-end',
   },
   modalDismissArea: {
@@ -253,9 +223,13 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: '#0F172A',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     maxHeight: height * 0.8,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: 'rgba(96, 165, 250, 0.1)',
   },
   handleContainer: {
     alignItems: 'center',
@@ -268,7 +242,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
     marginVertical: 16,
@@ -281,7 +255,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
+    paddingVertical: 16,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#1E293B',
@@ -298,7 +272,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   directionContainer: {
-    marginTop: 12,
+    marginTop: 16,
     paddingHorizontal: 20,
     paddingBottom: 16,
   },
@@ -306,7 +280,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   directionButtons: {
     flexDirection: 'row',
@@ -317,16 +291,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#1E293B',
-    padding: 12,
-    borderRadius: 8,
+    padding: 14,
+    borderRadius: 12,
     flex: 0.48,
+    borderWidth: 1,
+    borderColor: '#2A3346',
   },
   activeDirectionButton: {
     backgroundColor: '#3B82F6',
+    borderColor: '#60A5FA',
   },
   directionText: {
     color: '#94A3B8',
-    fontWeight: '500',
+    fontWeight: '600',
     marginLeft: 8,
   },
   activeDirectionText: {
@@ -334,8 +311,10 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     margin: 20,
-    marginTop: 8,
+    marginTop: 12,
     backgroundColor: '#3B82F6',
+    borderRadius: 12,
+    paddingVertical: 8,
   },
 });
 

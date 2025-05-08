@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Searchbar, Surface, Text, useTheme } from 'react-native-paper';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import SortModal, { SortOption } from '../../components/common/SortModal';
 import { useCrypto } from '../../contexts/CryptoContext';
 import { Ticker } from '../../services/types';
@@ -75,20 +76,6 @@ const Markets = () => {
     const priceChange = parseFloat(item.percent_change_24h);
     const isPositive = priceChange >= 0;
     
-    // Calcular cambios porcentuales
-    const change1h = parseFloat(item.percent_change_1h);
-    const change7d = parseFloat(item.percent_change_7d);
-    const isPositive1h = change1h >= 0;
-    const isPositive7d = change7d >= 0;
-    
-    // Calcular supply y circulating supply
-    const currentSupply = parseFloat(item.csupply);
-    const totalSupply = item.tsupply ? parseFloat(item.tsupply) : 0;
-    const maxSupply = item.msupply ? parseFloat(item.msupply) : 0;
-    
-    // Calcular porcentaje de suministro en circulación
-    const supplyPercentage = totalSupply > 0 ? (currentSupply / totalSupply) * 100 : 0;
-
     const handleCoinPress = () => {
       router.push({
         pathname: "/coin-detail",
@@ -97,166 +84,133 @@ const Markets = () => {
     };
 
     return (
-      <TouchableOpacity onPress={handleCoinPress}>
-        <Surface style={styles.coinCard}>
-          <View style={styles.coinHeader}>
-            <View style={styles.coinInfo}>
-              <View style={styles.rankContainer}>
-                <Text style={styles.rank}>{item.rank}</Text>
+      <Animated.View entering={FadeInDown.duration(400).delay(Number(item.rank) * 20).springify()}>
+        <TouchableOpacity onPress={handleCoinPress}>
+          <Surface style={styles.coinCard}>
+            <View style={styles.coinHeader}>
+              <View style={styles.coinInfo}>
+                <View style={styles.rankContainer}>
+                  <Text style={styles.rank}>{item.rank}</Text>
+                </View>
+                <View>
+                  <Text variant="titleMedium" style={styles.symbol}>{item.symbol}</Text>
+                  <Text variant="bodySmall" style={styles.name} numberOfLines={1}>{item.name}</Text>
+                </View>
               </View>
-              <View>
-                <Text variant="titleMedium" style={styles.symbol}>{item.symbol}</Text>
-                <Text variant="bodySmall" style={styles.name} numberOfLines={1}>{item.name}</Text>
-              </View>
-            </View>
-            <View style={styles.priceInfo}>
-              <Text variant="titleMedium" style={styles.price}>
-                ${Number(parseFloat(item.price_usd)).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6
-                })}
-              </Text>
-              <View style={[styles.changeContainer, { backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)' }]}>
-                <MaterialCommunityIcons 
-                  name={isPositive ? "trending-up" : "trending-down"} 
-                  size={12} 
-                  color={isPositive ? '#22c55e' : '#ef4444'} 
-                  style={{ marginRight: 4 }}
-                />
-                <Text
-                  variant="bodySmall"
-                  style={[
-                    styles.change,
-                    { color: isPositive ? '#22c55e' : '#ef4444' },
-                  ]}>
-                  {isPositive ? '+' : ''}{item.percent_change_24h}%
+              <View style={styles.priceInfo}>
+                <Text variant="titleMedium" style={styles.price}>
+                  ${Number(parseFloat(item.price_usd)).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 6
+                  })}
                 </Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.timeframeContainer}>
-            <View style={styles.timeframe}>
-              <Text variant="bodySmall" style={styles.timeframeLabel}>1h</Text>
-              <View style={[styles.timeframeValue, { backgroundColor: isPositive1h ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }]}>
-                <Text style={[styles.timeframeText, { color: isPositive1h ? '#22c55e' : '#ef4444' }]}>
-                  {isPositive1h ? '+' : ''}{item.percent_change_1h}%
-                </Text>
-              </View>
-            </View>
-            <View style={styles.timeframe}>
-              <Text variant="bodySmall" style={styles.timeframeLabel}>24h</Text>
-              <View style={[styles.timeframeValue, { backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }]}>
-                <Text style={[styles.timeframeText, { color: isPositive ? '#22c55e' : '#ef4444' }]}>
-                  {isPositive ? '+' : ''}{item.percent_change_24h}%
-                </Text>
-              </View>
-            </View>
-            <View style={styles.timeframe}>
-              <Text variant="bodySmall" style={styles.timeframeLabel}>7d</Text>
-              <View style={[styles.timeframeValue, { backgroundColor: isPositive7d ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)' }]}>
-                <Text style={[styles.timeframeText, { color: isPositive7d ? '#22c55e' : '#ef4444' }]}>
-                  {isPositive7d ? '+' : ''}{item.percent_change_7d}%
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.statsContainer}>
-            <View style={styles.stat}>
-              <MaterialCommunityIcons 
-                name="chart-pie" 
-                size={16} 
-                color="#60A5FA" 
-                style={styles.statIcon}
-              />
-              <Text variant="bodySmall" style={styles.statLabel}>Mkt Cap</Text>
-              <Text variant="bodySmall" style={styles.statValue}>
-                ${formatValue(parseFloat(item.market_cap_usd))}
-              </Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.stat}>
-              <MaterialCommunityIcons 
-                name="chart-bar" 
-                size={16} 
-                color="#60A5FA" 
-                style={styles.statIcon}
-              />
-              <Text variant="bodySmall" style={styles.statLabel}>Volume (24h)</Text>
-              <Text variant="bodySmall" style={styles.statValue}>
-                ${formatValue(parseFloat(item.volume24))}
-              </Text>
-            </View>
-          </View>
-
-          {totalSupply > 0 && (
-            <View style={styles.supplyContainer}>
-              <View style={styles.supplyInfo}>
-                <Text variant="bodySmall" style={styles.supplyLabel}>
-                  Supply: {formatValue(currentSupply)} {item.symbol}
-                </Text>
-                {maxSupply > 0 && (
-                  <Text variant="bodySmall" style={styles.supplyMax}>
-                    Max: {formatValue(maxSupply)}
+                <View style={[styles.changeContainer, { 
+                  backgroundColor: isPositive ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                  borderWidth: 1,
+                  borderColor: isPositive ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'
+                }]}>
+                  <MaterialCommunityIcons 
+                    name={isPositive ? "trending-up" : "trending-down"} 
+                    size={14} 
+                    color={isPositive ? '#22c55e' : '#ef4444'} 
+                    style={{ marginRight: 4 }}
+                  />
+                  <Text
+                    variant="bodySmall"
+                    style={[
+                      styles.change,
+                      { color: isPositive ? '#22c55e' : '#ef4444' },
+                    ]}>
+                    {isPositive ? '+' : ''}{item.percent_change_24h}%
                   </Text>
-                )}
+                </View>
               </View>
-              <View style={styles.supplyBarContainer}>
-                <View style={[styles.supplyBar, { width: `${supplyPercentage}%` }]} />
-              </View>
-              <Text variant="bodySmall" style={styles.supplyPercentage}>
-                {supplyPercentage.toFixed(1)}%
-              </Text>
             </View>
-          )}
 
-          <View style={styles.priceConversion}>
-            <View style={styles.priceConverted}>
-              <MaterialCommunityIcons 
-                name="bitcoin" 
-                size={14} 
-                color="#F7931A" 
-                style={{ marginRight: 4 }}
-              />
-              <Text variant="bodySmall" style={styles.btcPrice}>
-                {parseFloat(item.price_btc).toFixed(8)} BTC
-              </Text>
+            <View style={styles.statsContainer}>
+              <View style={styles.stat}>
+                <MaterialCommunityIcons 
+                  name="chart-pie" 
+                  size={16} 
+                  color="#60A5FA" 
+                  style={styles.statIcon}
+                />
+                <View style={styles.statTextContainer}>
+                  <Text style={styles.statLabel}>Mkt Cap</Text>
+                  <Text variant="bodySmall" style={styles.statValue}>
+                    ${formatValue(parseFloat(item.market_cap_usd))}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.stat}>
+                <MaterialCommunityIcons 
+                  name="chart-bar" 
+                  size={16} 
+                  color="#60A5FA" 
+                  style={styles.statIcon}
+                />
+                <View style={styles.statTextContainer}>
+                  <Text style={styles.statLabel}>Vol 24h</Text>
+                  <Text variant="bodySmall" style={styles.statValue}>
+                    ${formatValue(parseFloat(item.volume24))}
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
-        </Surface>
-      </TouchableOpacity>
+          </Surface>
+        </TouchableOpacity>
+      </Animated.View>
     );
   };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <Searchbar
-        placeholder="Search coins..."
-        onChangeText={handleSearch}
-        value={searchQuery}
-        style={[styles.searchBar, { 
-          backgroundColor: '#1E293B',
-          borderRadius: 12,
-        }]}
-        icon="magnify"
-        iconColor={theme.colors.primary}
-        placeholderTextColor={theme.colors.onSurfaceVariant}
-      />
-
-      <SortModal
-        sortOptions={sortOptions}
-        currentSortField={sortField}
-        isAscending={sortAsc}
-        onSortChange={handleSort}
-        onDirectionChange={handleDirectionChange}
-      />
+      <View style={styles.headerContainer}>
+        <View style={styles.headerControls}>
+          <Searchbar
+            placeholder="Search coins..."
+            onChangeText={handleSearch}
+            value={searchQuery}
+            style={[styles.searchBar, { 
+              backgroundColor: '#1E293B',
+              borderRadius: 18,
+            }]}
+            icon="magnify"
+            iconColor="#60A5FA"
+            inputStyle={{ color: '#FFFFFF', fontSize: 15 }}
+            placeholderTextColor="rgba(148, 163, 184, 0.8)"
+          />
+          
+          <SortModal
+            sortOptions={sortOptions}
+            currentSortField={sortField}
+            isAscending={sortAsc}
+            onSortChange={handleSort}
+            onDirectionChange={handleDirectionChange}
+          />
+        </View>
+        
+        {sortedTickers.length > 0 && (
+          <View style={styles.sortInfoContainer}>
+            <Text style={styles.sortInfoText}>
+              Sorting by: {sortOptions.find(option => option.field === sortField)?.label || 'Rank'} 
+              {sortAsc ? ' (Ascending)' : ' (Descending)'}
+            </Text>
+          </View>
+        )}
+      </View>
 
       <FlatList
         data={sortedTickers}
         renderItem={renderCoin}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={10}
+        maxToRenderPerBatch={15}
+        windowSize={5}
+        removeClippedSubviews={true}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <MaterialCommunityIcons
@@ -278,32 +232,51 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 10,
+  },
+  headerControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   searchBar: {
-    margin: 16,
-    marginBottom: 8,
+    flex: 1,
+    marginRight: 10,
+    height: 50,
     elevation: 3,
-    height: 48,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(96, 165, 250, 0.15)',
   },
   list: {
     padding: 8,
+    paddingBottom: 24,
+    paddingHorizontal: 10,
   },
   coinCard: {
-    padding: 16,
-    marginHorizontal: 8,
-    marginBottom: 8,
-    borderRadius: 16,
-    elevation: 0,
+    padding: 14,
+    marginHorizontal: 10,
+    marginBottom: 12,
+    borderRadius: 18,
+    elevation: 2,
     backgroundColor: '#1E293B',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(96, 165, 250, 0.1)',
   },
   coinHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
+    alignItems: 'center',
+    marginBottom: 14,
   },
   coinInfo: {
     flex: 1,
@@ -311,24 +284,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rankContainer: {
-    backgroundColor: '#60A5FA',
-    borderRadius: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    marginRight: 8,
+    backgroundColor: 'rgba(96, 165, 250, 0.15)',
+    borderRadius: 10,
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(96, 165, 250, 0.25)',
   },
   rank: {
     fontSize: 12,
-    color: '#FFFFFF',
+    color: '#60A5FA',
     fontWeight: 'bold',
   },
   symbol: {
     fontWeight: 'bold',
     color: '#FFFFFF',
+    fontSize: 17,
   },
   name: {
     color: '#94A3B8',
-    maxWidth: 120,
+    maxWidth: 150,
+    marginTop: 3,
   },
   priceInfo: {
     alignItems: 'flex-end',
@@ -336,49 +315,57 @@ const styles = StyleSheet.create({
   price: {
     fontWeight: 'bold',
     color: '#FFFFFF',
+    fontSize: 17,
   },
   changeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    marginTop: 4,
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginTop: 5,
   },
   change: {
-    fontWeight: '500',
+    fontWeight: '600',
     fontSize: 12,
   },
   statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderTopColor: '#374151',
+    justifyContent: 'space-around',
+    marginTop: 10,
     paddingTop: 12,
-    marginTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(55, 65, 81, 0.3)',
     backgroundColor: 'transparent',
   },
   stat: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   statIcon: {
-    marginBottom: 4,
+    marginRight: 6,
+  },
+  statTextContainer: {
+    alignItems: 'flex-start',
   },
   statLabel: {
     color: '#94A3B8',
-    marginBottom: 4,
-    fontSize: 11,
+    fontSize: 10,
+    marginBottom: 2,
   },
   statValue: {
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#FFFFFF',
+    fontSize: 13,
   },
   statDivider: {
     width: 1,
-    height: '80%',
-    backgroundColor: '#374151',
+    height: '60%',
+    backgroundColor: 'rgba(55, 65, 81, 0.3)',
     alignSelf: 'center',
+    marginHorizontal: 8,
   },
   emptyContainer: {
     flex: 1,
@@ -390,80 +377,14 @@ const styles = StyleSheet.create({
     marginTop: 12,
     opacity: 0.7,
   },
-  timeframeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 12,
-    paddingHorizontal: 4,
+  sortInfoContainer: {
+    marginTop: 8,
+    marginBottom: 2,
   },
-  timeframe: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  timeframeLabel: {
+  sortInfoText: {
     color: '#94A3B8',
-    fontSize: 11,
-    marginBottom: 4,
-  },
-  timeframeValue: {
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    minWidth: 65,
-    alignItems: 'center',
-  },
-  timeframeText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '500',
-  },
-  supplyContainer: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#374151',
-  },
-  supplyInfo: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  supplyLabel: {
-    color: '#94A3B8',
-    fontSize: 11,
-  },
-  supplyMax: {
-    color: '#94A3B8',
-    fontSize: 11,
-  },
-  supplyBarContainer: {
-    height: 6,
-    backgroundColor: '#374151',
-    borderRadius: 3,
-    overflow: 'hidden',
-    marginVertical: 4,
-  },
-  supplyBar: {
-    height: '100%',
-    backgroundColor: '#60A5FA',
-    borderRadius: 3,
-  },
-  supplyPercentage: {
-    color: '#94A3B8',
-    fontSize: 10,
-    textAlign: 'right',
-  },
-  priceConversion: {
-    marginTop: 12,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  priceConverted: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  btcPrice: {
-    color: '#94A3B8',
-    fontSize: 11,
   },
 });
 
