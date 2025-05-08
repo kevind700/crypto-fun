@@ -1,75 +1,116 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-
-export default function HomeScreen() {
+import React from 'react';
+import { ScrollView, RefreshControl, StyleSheet } from 'react-native';
+import { useTheme, Surface, Text } from 'react-native-paper';
+import { useCrypto } from '../../contexts/CryptoContext';
+import MarketChart from '../../components/charts/MarketChart';
+import DonutChart from '../../components/charts/DonutChart';
+// Component implementations inline since files don't exist yet
+const MarketMetricsCard = ({ mcap, volume, mcapChange }: any) => {
+  const theme = useTheme();
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <Surface style={[styles.chartCard, { backgroundColor: theme.colors.surface }]}>
+      <Text variant="titleMedium" style={styles.cardTitle}>Market Metrics</Text>
+      <Text>Market Cap: ${mcap?.toLocaleString()}</Text>
+      <Text>Volume: ${volume?.toLocaleString()}</Text>
+      <Text>Change: {mcapChange}%</Text>
+    </Surface>
+  );
+};
+
+const TopMoversCard = ({ tickers }: any) => {
+  const theme = useTheme();
+  return (
+    <Surface style={[styles.chartCard, { backgroundColor: theme.colors.surface }]}>
+      <Text variant="titleMedium" style={styles.cardTitle}>Top Movers</Text>
+      {tickers?.slice(0, 5).map((ticker: any) => (
+        <Text key={ticker.id}>{ticker.name}: {ticker.percent_change_24h}%</Text>
+      ))}
+    </Surface>
+  );
+};
+
+const GlobalStatsCard = ({ globalData }: any) => {
+  const theme = useTheme();
+  return (
+    <Surface style={[styles.chartCard, { backgroundColor: theme.colors.surface }]}>
+      <Text variant="titleMedium" style={styles.cardTitle}>Global Stats</Text>
+      <Text>BTC Dominance: {globalData?.btc_d}%</Text>
+      <Text>ETH Dominance: {globalData?.eth_d}%</Text>
+    </Surface>
+  );
+};
+
+export default function OverviewScreen() {
+  const theme = useTheme();
+  const {
+    globalData,
+    tickers,
+    isLoading,
+    refreshData,
+  } = useCrypto();
+
+  const dominanceData = [
+    { value: parseFloat(globalData?.btc_d || '0'), color: '#F7931A', label: 'BTC' },
+    { value: parseFloat(globalData?.eth_d || '0'), color: '#627EEA', label: 'ETH' },
+    {
+      value: 100 - parseFloat(globalData?.btc_d || '0') - parseFloat(globalData?.eth_d || '0'),
+      color: theme.colors.primary.toString(),
+      label: 'Others',
+    },
+  ];
+
+  return (
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      refreshControl={
+        <RefreshControl refreshing={isLoading} onRefresh={refreshData} />
+      }
+    >
+      <GlobalStatsCard globalData={globalData} />
+      
+      <Surface style={[styles.chartCard, { backgroundColor: theme.colors.surface }]}>
+        <Text variant="titleMedium" style={styles.cardTitle}>Market Dominance</Text>
+        <DonutChart data={dominanceData} />
+      </Surface>
+
+      <TopMoversCard tickers={tickers} />
+      
+      <MarketMetricsCard
+        mcap={globalData?.total_mcap}
+        volume={globalData?.total_volume}
+        mcapChange={globalData?.mcap_change}
+      />
+
+      <Surface style={[styles.chartCard, { backgroundColor: theme.colors.surface }]}>
+        <Text variant="titleMedium" style={styles.cardTitle}>Market Overview</Text>
+        <MarketChart
+          data={{
+            labels: ['1D', '7D', '1M', '3M', '6M', '1Y'],
+            datasets: [{
+              data: [
+                Number(parseFloat(String(globalData?.total_mcap || '0'))),
+                Number(parseFloat(String(globalData?.total_volume || '0'))),
+              ],
+            }],
+          }}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </Surface>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  chartCard: {
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    elevation: 4,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  cardTitle: {
+    marginBottom: 16,
+    fontWeight: 'bold',
   },
 });
