@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, Linking } from 'react-native';
-import { Surface, Text, Searchbar, useTheme, Button, Chip } from 'react-native-paper';
+import { Surface, Text, Searchbar, useTheme, TouchableRipple, Chip } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ScrollView } from 'react-native-gesture-handler';
 import CoinloreApiService from '../../services/CoinloreApiService';
 import { Exchange } from '../../services/types';
 
-type SortField = 'rank' | 'volume_usd' | 'active_pairs' | 'confidence_score';
+type SortField = 'rank' | 'volume_usd' | 'active_pairs';
+
+const formatVolume = (volume: string) => {
+  const value = parseFloat(volume);
+  if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
+  if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
+  if (value >= 1e3) return `$${(value / 1e3).toFixed(2)}K`;
+  return `$${value.toFixed(2)}`;
+};
 
 const Exchanges = () => {
   const theme = useTheme();
@@ -24,7 +32,6 @@ const Exchanges = () => {
     try {
       const service = CoinloreApiService.getInstance();
       const data = await service.getExchanges();
-      // Convert object to array
       const exchangesArray = Object.values(data || {});
       setExchanges(exchangesArray);
     } catch (error) {
@@ -56,49 +63,75 @@ const Exchanges = () => {
   });
 
   const renderExchange = ({ item }: { item: Exchange }) => {
-    const confidence = parseFloat(item.confidence_score);
-    const confidenceColor = confidence >= 8 ? '#22c55e' :
-      confidence >= 6 ? '#f59e0b' : '#ef4444';
+    const volume = formatVolume(item.volume_usd);
+    const pairs = `${item.active_pairs}`;
 
     return (
-      <Surface style={[styles.exchangeCard, { backgroundColor: theme.colors.surface }]}>
-        <View style={styles.exchangeHeader}>
-          <View style={styles.exchangeInfo}>
-            <Text variant="titleMedium" style={styles.name}>{item.name}</Text>
-            <Text variant="bodySmall" style={styles.country}>{item.country || 'Unknown location'}</Text>
+      <TouchableRipple onPress={() => Linking.openURL(item.url)}>
+        <Surface style={[styles.exchangeCard, { backgroundColor: theme.colors.surfaceVariant }]}>
+          <View style={styles.exchangeHeader}>
+            <View style={styles.exchangeInfo}>
+              <Text variant="titleLarge" style={[styles.name, { color: theme.colors.primary }]}>
+                {item.name}
+              </Text>
+              <View style={styles.locationContainer}>
+                <MaterialCommunityIcons 
+                  name="map-marker" 
+                  size={14} 
+                  color={theme.colors.onSurface} 
+                  style={styles.locationIcon}
+                />
+                <Text variant="labelMedium" style={{ color: theme.colors.onSurface }}>
+                  {item.country || 'Unknown location'}
+                </Text>
+              </View>
+            </View>
+            <Chip 
+              mode="flat"
+              style={styles.rankChip}
+              textStyle={{ color: theme.colors.background }}>
+              #{item.rank}
+            </Chip>
           </View>
-          <Chip icon="shield-check" style={{ backgroundColor: confidenceColor }}>
-            <Text style={{ color: theme.colors.surface }}>{item.confidence_score}%</Text>
-          </Chip>
-        </View>
 
-        <View style={styles.statsContainer}>
-          <View style={styles.stat}>
-            <Text variant="bodySmall" style={styles.statLabel}>Volume (24h)</Text>
-            <Text variant="bodyMedium" style={styles.statValue}>
-              ${parseFloat(item.volume_usd).toLocaleString()}
+          <View style={styles.statsContainer}>
+            <View style={styles.stat}>
+              <MaterialCommunityIcons 
+                name="chart-line" 
+                size={20} 
+                color={theme.colors.primary}
+              />
+              <Text variant="titleMedium" style={[styles.statValue, { color: theme.colors.primary }]}>
+                {volume}
+              </Text>
+              <Text variant="labelSmall" style={styles.statLabel}>Volume (24h)</Text>
+            </View>
+            <View style={[styles.statDivider, { backgroundColor: theme.colors.surfaceVariant }]} />
+            <View style={styles.stat}>
+              <MaterialCommunityIcons 
+                name="swap-horizontal" 
+                size={20} 
+                color={theme.colors.primary}
+              />
+              <Text variant="titleMedium" style={[styles.statValue, { color: theme.colors.primary }]}>
+                {Number(pairs).toLocaleString()}
+              </Text>
+              <Text variant="labelSmall" style={styles.statLabel}>Active Pairs</Text>
+            </View>
+          </View>
+
+          <View style={styles.footer}>
+            <MaterialCommunityIcons 
+              name="arrow-right" 
+              size={20} 
+              color={theme.colors.primary}
+            />
+            <Text variant="labelMedium" style={{ color: theme.colors.primary }}>
+              Visit Exchange
             </Text>
           </View>
-          <View style={styles.stat}>
-            <Text variant="bodySmall" style={styles.statLabel}>Active Pairs</Text>
-            <Text variant="bodyMedium" style={styles.statValue}>
-              {item.active_pairs}
-            </Text>
-          </View>
-          <View style={styles.stat}>
-            <Text variant="bodySmall" style={styles.statLabel}>Rank</Text>
-            <Text variant="bodyMedium" style={styles.statValue}>#{item.rank}</Text>
-          </View>
-        </View>
-
-        <Button
-          mode="outlined"
-          icon="open-in-new"
-          onPress={() => Linking.openURL(item.url)}
-          style={styles.button}>
-          Visit Exchange
-        </Button>
-      </Surface>
+        </Surface>
+      </TouchableRipple>
     );
   };
 
@@ -108,7 +141,9 @@ const Exchanges = () => {
         placeholder="Search exchanges..."
         onChangeText={setSearchQuery}
         value={searchQuery}
-        style={styles.searchBar}
+        style={[styles.searchBar, { backgroundColor: theme.colors.surfaceVariant }]}
+        iconColor={theme.colors.primary}
+        placeholderTextColor={theme.colors.onSurface}
       />
 
       <View style={styles.filterContainer}>
@@ -116,26 +151,23 @@ const Exchanges = () => {
           <Chip
             selected={sortField === 'rank'}
             onPress={() => handleSort('rank')}
-            style={styles.chip}>
+            style={styles.chip}
+            textStyle={{ color: sortField === 'rank' ? theme.colors.background : theme.colors.onSurface }}>
             Rank {sortField === 'rank' && (sortAsc ? '↑' : '↓')}
           </Chip>
           <Chip
             selected={sortField === 'volume_usd'}
             onPress={() => handleSort('volume_usd')}
-            style={styles.chip}>
+            style={styles.chip}
+            textStyle={{ color: sortField === 'volume_usd' ? theme.colors.background : theme.colors.onSurface }}>
             Volume {sortField === 'volume_usd' && (sortAsc ? '↑' : '↓')}
           </Chip>
           <Chip
             selected={sortField === 'active_pairs'}
             onPress={() => handleSort('active_pairs')}
-            style={styles.chip}>
+            style={styles.chip}
+            textStyle={{ color: sortField === 'active_pairs' ? theme.colors.background : theme.colors.onSurface }}>
             Pairs {sortField === 'active_pairs' && (sortAsc ? '↑' : '↓')}
-          </Chip>
-          <Chip
-            selected={sortField === 'confidence_score'}
-            onPress={() => handleSort('confidence_score')}
-            style={styles.chip}>
-            Confidence {sortField === 'confidence_score' && (sortAsc ? '↑' : '↓')}
           </Chip>
         </ScrollView>
       </View>
@@ -152,9 +184,9 @@ const Exchanges = () => {
             <MaterialCommunityIcons
               name="alert-circle-outline"
               size={48}
-              color={theme.colors.secondary}
+              color={theme.colors.error}
             />
-            <Text variant="bodyLarge" style={styles.emptyText}>
+            <Text variant="titleMedium" style={[styles.emptyText, { color: theme.colors.error }]}>
               No exchanges found
             </Text>
           </View>
@@ -171,6 +203,7 @@ const styles = StyleSheet.create({
   searchBar: {
     margin: 16,
     elevation: 4,
+    borderRadius: 12,
   },
   filterContainer: {
     paddingHorizontal: 16,
@@ -178,51 +211,71 @@ const styles = StyleSheet.create({
   },
   chip: {
     marginRight: 8,
+    borderRadius: 8,
   },
   list: {
     padding: 16,
   },
   exchangeCard: {
-    padding: 16,
     marginBottom: 12,
-    borderRadius: 12,
+    borderRadius: 16,
     elevation: 2,
+    overflow: 'hidden',
   },
   exchangeHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    padding: 16,
   },
   exchangeInfo: {
     flex: 1,
   },
   name: {
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
-  country: {
-    opacity: 0.7,
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  locationIcon: {
+    marginRight: 4,
+  },
+  rankChip: {
+    backgroundColor: '#60a5fa',
+    borderRadius: 8,
   },
   statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.1)',
-    paddingVertical: 12,
+    justifyContent: 'space-around',
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   stat: {
     flex: 1,
     alignItems: 'center',
   },
+  statDivider: {
+    width: 1,
+    height: '100%',
+    opacity: 0.1,
+  },
   statLabel: {
     opacity: 0.7,
-    marginBottom: 4,
+    marginTop: 4,
   },
   statValue: {
-    fontWeight: '500',
+    fontWeight: '600',
+    marginTop: 4,
   },
-  button: {
-    marginTop: 8,
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: 12,
+    gap: 8,
   },
   emptyContainer: {
     flex: 1,
@@ -232,7 +285,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 12,
-    opacity: 0.7,
   },
 });
 

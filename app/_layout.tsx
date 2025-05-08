@@ -1,17 +1,13 @@
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
 import { Stack } from 'expo-router';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { lightTheme, darkTheme } from '../theme';
+import { darkTheme } from '../theme';
 import * as Font from 'expo-font';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CryptoProvider } from '../contexts/CryptoContext';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? darkTheme : lightTheme;
-
   useEffect(() => {
     async function loadCustomFonts() {
       await Font.loadAsync({
@@ -23,19 +19,19 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PaperProvider theme={theme}>
+      <PaperProvider theme={darkTheme}>
         <CryptoProvider>
           <Stack
             screenOptions={{
               headerStyle: {
-                backgroundColor: theme.colors.surface,
+                backgroundColor: darkTheme.colors.surface,
               },
-              headerTintColor: theme.colors.onSurface,
+              headerTintColor: darkTheme.colors.onSurface,
               headerTitleStyle: {
                 fontWeight: 'bold',
               },
               contentStyle: {
-                backgroundColor: theme.colors.background,
+                backgroundColor: darkTheme.colors.background,
               },
             }}>
             <Stack.Screen
