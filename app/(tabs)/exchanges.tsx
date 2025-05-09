@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { memo, useEffect, useState } from "react";
-import { FlatList, Linking, View } from "react-native";
+import { FlatList, Linking, RefreshControl, View } from "react-native";
 import {
   ActivityIndicator,
   Searchbar,
@@ -11,6 +11,7 @@ import {
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SortModal, { SortOption } from "../../components/common/SortModal";
+import { COLORS, LIMITS, UI } from "../../constants";
 import { Exchange } from "../../models/types/crypto";
 import CoinloreApiService from "../../services/CoinloreApiService";
 import { formatVolume } from "../../utils";
@@ -117,11 +118,12 @@ const Exchanges = () => {
   const theme = useTheme();
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("volume_usd");
   const [sortAsc, setSortAsc] = useState(false);
   const [page, setPage] = useState(1);
-  const pageSize = 10; // Mostramos 10 elementos por página
+  const pageSize = LIMITS.PAGE_SIZE; // Display items per page
   const [displayedExchanges, setDisplayedExchanges] = useState<Exchange[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
@@ -133,20 +135,26 @@ const Exchanges = () => {
     applyPagination();
   }, [exchanges, sortField, sortAsc, page, searchQuery]);
 
+  /**
+   * Resets pagination state to initial values
+   */
   const resetPagination = () => {
     setPage(1);
     setDisplayedExchanges([]);
   };
 
+  /**
+   * Applies pagination, sorting, and filtering to the data
+   */
   const applyPagination = () => {
     if (exchanges.length === 0) return;
 
-    // Filtrar por búsqueda
+    // Filter by search query
     const filteredExchanges = exchanges.filter((exchange) =>
       exchange.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
-    // Ordenar
+    // Sort data
     const sortedData = [...filteredExchanges].sort((a, b) => {
       const multiplier = sortAsc ? 1 : -1;
       const aValue = parseFloat(a[sortField] as string) || 0;
@@ -154,7 +162,7 @@ const Exchanges = () => {
       return (aValue - bValue) * multiplier;
     });
 
-    // Aplicar paginación
+    // Apply pagination
     if (page === 1) {
       setDisplayedExchanges(sortedData.slice(0, pageSize));
     } else {
@@ -165,9 +173,18 @@ const Exchanges = () => {
     setIsLoadingMore(false);
   };
 
-  const loadExchanges = async () => {
+  /**
+   * Loads exchanges data from API
+   * @param isRefresh - Whether the load is triggered by pull-to-refresh
+   */
+  const loadExchanges = async (isRefresh = false) => {
     try {
-      setIsLoading(true);
+      if (isRefresh) {
+        setIsRefreshing(true);
+      } else if (!isLoadingMore) {
+        setIsLoading(true);
+      }
+
       const service = CoinloreApiService.getInstance();
       const data = await service.getExchanges();
       const exchangesArray = Object.values(data || {});
@@ -177,10 +194,21 @@ const Exchanges = () => {
       console.error("Failed to load exchanges:", error);
       setExchanges([]);
     } finally {
+      setIsRefreshing(false);
       setIsLoading(false);
     }
   };
 
+  /**
+   * Handles pull-to-refresh action
+   */
+  const handleRefresh = () => {
+    loadExchanges(true);
+  };
+
+  /**
+   * Handles changing the sort field
+   */
   const handleSort = (field: SortField) => {
     if (field !== sortField) {
       setSortField(field);
@@ -188,16 +216,25 @@ const Exchanges = () => {
     }
   };
 
+  /**
+   * Toggles sort direction between ascending and descending
+   */
   const handleDirectionChange = () => {
     setSortAsc(!sortAsc);
     resetPagination();
   };
 
+  /**
+   * Handles search query changes and filters data
+   */
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     resetPagination();
   };
 
+  /**
+   * Handles loading more items when user reaches end of list
+   */
   const handleEndReached = () => {
     if (isLoading || isLoadingMore) return;
     
@@ -211,12 +248,15 @@ const Exchanges = () => {
     setPage(prevPage => prevPage + 1);
   };
 
+  /**
+   * Renders loading indicator at the bottom of the list during pagination
+   */
   const renderFooter = () => {
     if (!isLoadingMore) return null;
     
     return (
       <View style={styles.loadingFooter}>
-        <ActivityIndicator size="small" color="#60A5FA" />
+        <ActivityIndicator size={UI.INDICATOR_SIZE_SMALL} color={COLORS.ACCENT_BLUE} />
       </View>
     );
   };
@@ -235,23 +275,23 @@ const Exchanges = () => {
             style={[
               styles.searchBar,
               {
-                backgroundColor: "rgba(30, 41, 59, 0.8)",
+                backgroundColor: COLORS.DARK_INPUT,
                 borderRadius: 20,
                 elevation: 0,
-                height: 44,
+                height: UI.SEARCH_BAR_HEIGHT,
                 borderWidth: 1,
-                borderColor: "rgba(96, 165, 250, 0.2)",
+                borderColor: COLORS.ACCENT_BLUE_BORDER,
               },
             ]}
             icon="magnify"
-            iconColor="#60A5FA"
+            iconColor={COLORS.ACCENT_BLUE}
             inputStyle={{
               color: "#FFFFFF",
               fontSize: 14,
               alignSelf: "center",
               marginLeft: -5,
             }}
-            placeholderTextColor="rgba(148, 163, 184, 0.8)"
+            placeholderTextColor={COLORS.TEXT_MUTED}
           />
 
           <SortModal
@@ -281,13 +321,26 @@ const Exchanges = () => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
-        refreshing={isLoading}
-        onRefresh={loadExchanges}
+        refreshControl={
+          <RefreshControl 
+            refreshing={isRefreshing} 
+            onRefresh={handleRefresh}
+            colors={[COLORS.ACCENT_BLUE]}
+            tintColor={theme.colors.primary}
+            progressBackgroundColor={theme.colors.surface}
+          />
+        }
         ListEmptyComponent={<EmptyListComponent />}
         ListFooterComponent={renderFooter}
         onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={UI.END_REACHED_THRESHOLD}
       />
+      
+      {isLoading && !isRefreshing && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size={UI.INDICATOR_SIZE_LARGE} color={COLORS.ACCENT_BLUE} />
+        </View>
+      )}
     </SafeAreaView>
   );
 };

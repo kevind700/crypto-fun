@@ -25,6 +25,16 @@ export const COLORS = {
   POSITIVE: "#4CAF50", // Positive change indicator color
   NEGATIVE: "#FF5252", // Negative change indicator color
   LOADING: "#0000ff", // Loading indicator color
+  
+  // UI component specific colors
+  ACCENT_BLUE: "#60A5FA", // Blue accent color used in buttons and indicators
+  ACCENT_BLUE_LIGHT: "rgba(96, 165, 250, 0.1)", // Light blue for backgrounds
+  ACCENT_BLUE_BORDER: "rgba(96, 165, 250, 0.2)", // Light blue for borders
+  DARK_BACKGROUND: "rgba(15, 23, 42, 0.5)", // Dark background for headers
+  DARK_INPUT: "rgba(30, 41, 59, 0.8)", // Dark background for inputs
+  TEXT_MUTED: "#94A3B8", // Muted text color
+  OVERLAY_BACKGROUND: "rgba(0, 0, 0, 0.3)", // Semi-transparent overlay
+  DIVIDER: "rgba(0, 0, 0, 0.05)", // Color for dividers
 };
 
 /**
@@ -77,4 +87,26 @@ export const LIMITS = {
   TOP_MOVERS: 10, // Number of top movers to display
   SEARCH_RESULTS_MIN: 5, // Minimum number of search results
   DEFAULT_PAGE_SIZE: 50, // Default number of items per page
+  PAGE_SIZE: 10, // Number of items per page for pagination
+};
+
+/**
+ * UI Component constants
+ * These define values used for UI components
+ */
+export const UI = {
+  SEARCH_BAR_HEIGHT: 44, // Height for search bars
+  INDICATOR_SIZE_SMALL: "small" as const, // Small indicator size
+  INDICATOR_SIZE_LARGE: "large" as const, // Large indicator size
+  END_REACHED_THRESHOLD: 0.5, // FlatList end reached threshold
+  PAGINATION_BUTTON_HEIGHT: 36, // Height of pagination buttons
+  PAGINATION_BUTTON_MIN_WIDTH: 100, // Min width of pagination buttons
+  ANIMATION_DURATION: 400, // Default animation duration
+  ICON_SIZES: {
+    TINY: 14,
+    SMALL: 16,
+    MEDIUM: 20,
+    LARGE: 24,
+    XLARGE: 48
+  }
 };

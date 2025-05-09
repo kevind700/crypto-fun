@@ -1,11 +1,12 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { memo, useEffect, useState } from "react";
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, RefreshControl, TouchableOpacity, View } from "react-native";
 import { ActivityIndicator, Searchbar, Surface, Text, useTheme } from "react-native-paper";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SortModal, { SortOption } from "../../components/common/SortModal";
+import { COLORS, LIMITS, UI } from "../../constants";
 import { useCrypto } from "../../contexts/CryptoContext";
 import { Ticker } from "../../models/types/crypto";
 import {
@@ -162,15 +163,16 @@ const EmptyListComponent = memo(() => {
 
 const Markets = () => {
   const theme = useTheme();
-  const { tickers, isLoading } = useCrypto();
+  const { tickers, isLoading, refreshData } = useCrypto();
   const [sortField, setSortField] = useState<SortField>("rank");
   const [sortAsc, setSortAsc] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredTickers, setFilteredTickers] = useState<Ticker[]>([]);
   const [page, setPage] = useState(1);
-  const pageSize = 10; // Mostramos 10 elementos por página
+  const pageSize = LIMITS.PAGE_SIZE; // Display items per page
   const [displayedTickers, setDisplayedTickers] = useState<Ticker[]>([]);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     if (tickers) {
@@ -183,11 +185,17 @@ const Markets = () => {
     applyPagination();
   }, [filteredTickers, sortField, sortAsc, page]);
 
+  /**
+   * Resets pagination state to initial values
+   */
   const resetPagination = () => {
     setPage(1);
     setDisplayedTickers([]);
   };
 
+  /**
+   * Applies pagination, sorting, and filtering to the data
+   */
   const applyPagination = () => {
     if (filteredTickers.length === 0) return;
 
@@ -198,11 +206,11 @@ const Markets = () => {
       return (aValue - bValue) * multiplier;
     });
 
-    // Si estamos en la primera página, reemplazamos completamente los elementos
+    // For the first page, replace all items
     if (page === 1) {
       setDisplayedTickers(sortedData.slice(0, pageSize));
     } else {
-      // Si es página posterior, añadimos los nuevos elementos
+      // For subsequent pages, add new items
       const nextItems = sortedData.slice(0, page * pageSize);
       setDisplayedTickers(nextItems);
     }
@@ -210,6 +218,22 @@ const Markets = () => {
     setIsLoadingMore(false);
   };
 
+  /**
+   * Handles pull-to-refresh action
+   */
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshData();
+      resetPagination();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  /**
+   * Handles changing the sort field
+   */
   const handleSort = (field: SortField) => {
     if (field !== sortField) {
       setSortField(field);
@@ -217,11 +241,17 @@ const Markets = () => {
     }
   };
 
+  /**
+   * Toggles sort direction between ascending and descending
+   */
   const handleDirectionChange = () => {
     setSortAsc(!sortAsc);
     resetPagination();
   };
 
+  /**
+   * Handles search query changes and filters data accordingly
+   */
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     resetPagination();
@@ -239,6 +269,9 @@ const Markets = () => {
     }
   };
 
+  /**
+   * Handles loading more items when user reaches end of list
+   */
   const handleEndReached = () => {
     if (isLoading || isLoadingMore) return;
     if (displayedTickers.length >= filteredTickers.length) return;
@@ -247,12 +280,15 @@ const Markets = () => {
     setPage(prevPage => prevPage + 1);
   };
 
+  /**
+   * Renders loading indicator at the bottom of the list during pagination
+   */
   const renderFooter = () => {
     if (!isLoadingMore) return null;
     
     return (
       <View style={styles.footer}>
-        <ActivityIndicator size="small" color="#60A5FA" />
+        <ActivityIndicator size={UI.INDICATOR_SIZE_SMALL} color={COLORS.ACCENT_BLUE} />
       </View>
     );
   };
@@ -271,23 +307,23 @@ const Markets = () => {
             style={[
               styles.searchBar,
               {
-                backgroundColor: "rgba(30, 41, 59, 0.8)",
+                backgroundColor: COLORS.DARK_INPUT,
                 borderRadius: 20,
                 elevation: 0,
-                height: 44,
+                height: UI.SEARCH_BAR_HEIGHT,
                 borderWidth: 1,
-                borderColor: "rgba(96, 165, 250, 0.2)",
+                borderColor: COLORS.ACCENT_BLUE_BORDER,
               },
             ]}
             icon="magnify"
-            iconColor="#60A5FA"
+            iconColor={COLORS.ACCENT_BLUE}
             inputStyle={{
               color: "#FFFFFF",
               fontSize: 14,
               alignSelf: "center",
               marginLeft: -5,
             }}
-            placeholderTextColor="rgba(148, 163, 184, 0.8)"
+            placeholderTextColor={COLORS.TEXT_MUTED}
           />
 
           <SortModal
@@ -320,12 +356,21 @@ const Markets = () => {
         ListEmptyComponent={<EmptyListComponent />}
         ListFooterComponent={renderFooter}
         onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={UI.END_REACHED_THRESHOLD}
+        refreshControl={
+          <RefreshControl 
+            refreshing={isRefreshing} 
+            onRefresh={handleRefresh}
+            colors={[COLORS.ACCENT_BLUE]}
+            tintColor={theme.colors.primary}
+            progressBackgroundColor={theme.colors.surface}
+          />
+        }
       />
       
-      {isLoading && (
+      {isLoading && !isRefreshing && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#60A5FA" />
+          <ActivityIndicator size={UI.INDICATOR_SIZE_LARGE} color={COLORS.ACCENT_BLUE} />
         </View>
       )}
     </SafeAreaView>

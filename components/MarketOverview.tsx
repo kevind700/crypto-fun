@@ -20,7 +20,7 @@ import {
     Text,
     View,
 } from "react-native";
-import { COLORS } from "../constants";
+import { COLORS, UI } from "../constants";
 import { useCrypto } from "../contexts/CryptoContext";
 import CoinItem from "./CoinItem";
 import EmptyState from "./common/EmptyState";
@@ -47,8 +47,9 @@ const MarketOverview: React.FC = () => {
     loadMore,
   } = useCrypto();
   
-  // Estado para controlar la carga de más elementos
+  // State for controlling loading states
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Handle error state - show error message if API request failed
   if (error) {
@@ -56,10 +57,22 @@ const MarketOverview: React.FC = () => {
   }
   
   /**
-   * Función que se ejecuta cuando el usuario llega al final de la lista
+   * Handles pull-to-refresh action
+   */
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshData();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+  
+  /**
+   * Handles loading more items when user reaches end of list
    */
   const handleEndReached = async () => {
-    if (isLoading || isLoadingMore) return;
+    if (isLoading || isLoadingMore || isRefreshing) return;
     
     setIsLoadingMore(true);
     try {
@@ -79,7 +92,7 @@ const MarketOverview: React.FC = () => {
     
     return (
       <View style={styles.footer}>
-        <ActivityIndicator size="small" color={COLORS.LOADING} />
+        <ActivityIndicator size={UI.INDICATOR_SIZE_SMALL} color={COLORS.LOADING} />
       </View>
     );
   };
@@ -90,7 +103,7 @@ const MarketOverview: React.FC = () => {
    * @returns {JSX.Element | null} Empty state component or null if loading
    */
   const renderEmptyComponent = () => {
-    if (isLoading) return null;
+    if (isLoading || isRefreshing) return null;
     return <EmptyState message="No data available" />;
   };
 
@@ -137,14 +150,25 @@ const MarketOverview: React.FC = () => {
         )}
         keyExtractor={(item) => item.id}
         refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refreshData} />
+          <RefreshControl 
+            refreshing={isRefreshing} 
+            onRefresh={handleRefresh} 
+            colors={[COLORS.LOADING]}
+            tintColor={COLORS.LOADING}
+          />
         }
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
         ListEmptyComponent={renderEmptyComponent}
         onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={UI.END_REACHED_THRESHOLD}
       />
+      
+      {isLoading && !isRefreshing && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size={UI.INDICATOR_SIZE_LARGE} color={COLORS.LOADING} />
+        </View>
+      )}
     </View>
   );
 };
