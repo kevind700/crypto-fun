@@ -54,7 +54,8 @@ crypto-fun/
 ├── theme/                    # Definiciones de temas, estilos y diseño
 ├── utils/                    # Utilidades y funciones auxiliares
 └── __tests__/               # Pruebas unitarias e integración
-    └── services/            # Pruebas específicas para servicios
+    ├── services/            # Pruebas específicas para servicios
+    └── utils/               # Pruebas para utilidades y funciones auxiliares
 ```
 
 ## Tecnologías Utilizadas
@@ -144,7 +145,9 @@ Los componentes aprovechan características avanzadas como:
 
 ## Pruebas Unitarias
 
-El proyecto incluye pruebas exhaustivas para todos los servicios utilizando Jest:
+El proyecto incluye pruebas exhaustivas para servicios y utilidades utilizando Jest:
+
+### Pruebas de Servicios
 
 - **BaseApiService.test.ts**: Pruebas para la clase base de servicio API
   - Configuración de instancia Axios
@@ -158,7 +161,29 @@ El proyecto incluye pruebas exhaustivas para todos los servicios utilizando Jest
   - Métodos de utilidad (searchCoins, getTopGainers, etc.)
   - Gestión de casos límite y valores inválidos
 
-Las pruebas alcanzan una cobertura completa para garantizar la robustez y confiabilidad del código.
+### Pruebas de Utilidades
+
+- **formatters.test.ts**: Pruebas para funciones de formato
+  - formatPrice: Formato de precios con decimales adecuados
+  - formatLargeNumber: Formato de números grandes con separadores
+  - formatPercentChange: Adición de signos + o - a porcentajes
+  - getChangeColor: Obtención del color adecuado según el cambio porcentual
+
+- **dataTransformers.test.ts**: Pruebas para transformaciones de datos
+  - sortTickersByPercentChange: Ordenamiento por cambio porcentual
+  - getTopGainers: Obtención de las monedas con mayor ganancia
+  - getTopLosers: Obtención de las monedas con mayor pérdida
+  - searchCoins: Búsqueda de monedas por nombre, símbolo o ID
+  - sortTickersByMarketCap: Ordenamiento por capitalización de mercado
+  - sortTickersByVolume: Ordenamiento por volumen de trading
+
+- **index.test.ts**: Pruebas para funciones de utilidad adicionales
+  - formatValue: Formato de valores con sufijos (T, B, M, K) y símbolo de dólar
+  - formatVolume: Formato específico para volúmenes de trading
+  - getChangeBackgroundColor: Colores de fondo según el cambio porcentual, usando constantes
+  - getChangeBorderColor: Colores de borde según el cambio porcentual, usando constantes
+
+Las pruebas alcanzan una cobertura del 100% en todos los archivos probados, garantizando la robustez y confiabilidad del código.
 
 ## Implementación de Pruebas
 
