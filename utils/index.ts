@@ -22,6 +22,8 @@ export {
   formatPercentChange, formatPrice, getChangeColor
 } from './formatters';
 
+import { COLORS } from '../constants';
+
 // Funciones de formateo adicionales (migradas desde app/(tabs)/utils/formatters.ts)
 
 /**
@@ -68,7 +70,7 @@ export const getChangeBackgroundColor = (
     typeof percentChange === "string"
       ? parseFloat(percentChange)
       : percentChange;
-  return change >= 0 ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)";
+  return change >= 0 ? COLORS.POSITIVE_BACKGROUND : COLORS.NEGATIVE_BACKGROUND;
 };
 
 /**
@@ -86,5 +88,5 @@ export const getChangeBorderColor = (
     typeof percentChange === "string"
       ? parseFloat(percentChange)
       : percentChange;
-  return change >= 0 ? "rgba(34, 197, 94, 0.3)" : "rgba(239, 68, 68, 0.3)";
+  return change >= 0 ? COLORS.POSITIVE_BORDER : COLORS.NEGATIVE_BORDER;
 };

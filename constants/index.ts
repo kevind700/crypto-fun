@@ -35,6 +35,12 @@ export const COLORS = {
   TEXT_MUTED: "#94A3B8", // Muted text color
   OVERLAY_BACKGROUND: "rgba(0, 0, 0, 0.3)", // Semi-transparent overlay
   DIVIDER: "rgba(0, 0, 0, 0.05)", // Color for dividers
+
+  // Positive and negative semi-transparent colors for backgrounds and borders
+  POSITIVE_BACKGROUND: "rgba(34, 197, 94, 0.1)", // Background color for positive changes
+  NEGATIVE_BACKGROUND: "rgba(239, 68, 68, 0.1)", // Background color for negative changes
+  POSITIVE_BORDER: "rgba(34, 197, 94, 0.3)", // Border color for positive changes
+  NEGATIVE_BORDER: "rgba(239, 68, 68, 0.3)", // Border color for negative changes
 };
 
 /**

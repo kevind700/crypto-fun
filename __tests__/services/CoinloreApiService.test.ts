@@ -1,5 +1,5 @@
-import axios from "axios";
 import { CoinMarket, Exchange, GlobalData } from "@/models";
+import axios from "axios";
 import CoinloreApiService from "../../services/CoinloreApiService";
 
 jest.mock("axios", () => {
@@ -332,6 +332,54 @@ describe("CoinloreApiService", () => {
 
         const result = await service.searchCoins("unknown");
         expect(result).toEqual([]);
+      });
+
+      it("should search coins case insensitively", async () => {
+        const mockResponse = {
+          data: [
+            { id: "1", name: "Bitcoin", symbol: "BTC", nameid: "bitcoin" },
+            { id: "2", name: "Ethereum", symbol: "ETH", nameid: "ethereum" },
+            { id: "3", name: "Bitcoin Cash", symbol: "BCH", nameid: "bitcoin-cash" },
+          ],
+        };
+
+        (axios.get as jest.Mock).mockResolvedValueOnce({ data: mockResponse });
+
+        const result = await service.searchCoins("bitcoin");
+        expect(result.length).toBe(2);
+        expect(result[0].id).toBe("1");
+        expect(result[1].id).toBe("3");
+      });
+
+      it("should handle partial matching in search", async () => {
+        const mockResponse = {
+          data: [
+            { id: "1", name: "Bitcoin", symbol: "BTC", nameid: "bitcoin" },
+            { id: "2", name: "Ethereum", symbol: "ETH", nameid: "ethereum" },
+            { id: "3", name: "Litecoin", symbol: "LTC", nameid: "litecoin" },
+          ],
+        };
+
+        (axios.get as jest.Mock).mockResolvedValueOnce({ data: mockResponse });
+
+        const result = await service.searchCoins("coin");
+        expect(result.length).toBe(2);
+        expect(result.map(coin => coin.id).sort()).toEqual(["1", "3"]);
+      });
+
+      it("should trim whitespace in search query", async () => {
+        const mockResponse = {
+          data: [
+            { id: "1", name: "Bitcoin", symbol: "BTC", nameid: "bitcoin" },
+            { id: "2", name: "Ethereum", symbol: "ETH", nameid: "ethereum" },
+          ],
+        };
+
+        (axios.get as jest.Mock).mockResolvedValueOnce({ data: mockResponse });
+
+        const result = await service.searchCoins("  ethereum  ");
+        expect(result.length).toBe(1);
+        expect(result[0].id).toBe("2");
       });
     });
 
