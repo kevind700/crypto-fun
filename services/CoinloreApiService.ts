@@ -1,9 +1,9 @@
 /**
  * CoinloreApiService
- * 
+ *
  * This service provides methods to interact with the Coinlore cryptocurrency API.
  * It follows the singleton pattern to ensure only one instance is used throughout the app.
- * 
+ *
  * The service extends BaseApiService which handles the HTTP requests and error handling.
  * It includes methods for fetching cryptocurrency data, market information, and social stats.
  */
@@ -12,23 +12,23 @@ import {
   CoinMarketsParams,
   ExchangesParams,
   SocialStatsParams,
-  TickersParams
-} from '../models/types/api';
+  TickersParams,
+} from "../models/types/api";
 import {
   CoinMarket,
   Exchange,
   GlobalData,
   SocialStats,
-  Ticker
-} from '../models/types/crypto';
+  Ticker,
+} from "../models/types/crypto";
 import {
   getTopGainers,
   getTopLosers,
   searchCoins,
   sortTickersByMarketCap,
-  sortTickersByVolume
-} from '../utils/dataTransformers';
-import BaseApiService from './BaseApiService';
+  sortTickersByVolume,
+} from "../utils/dataTransformers";
+import BaseApiService from "./BaseApiService";
 
 /**
  * CoinloreApiService provides access to the Coinlore cryptocurrency API
@@ -36,8 +36,8 @@ import BaseApiService from './BaseApiService';
  */
 class CoinloreApiService extends BaseApiService {
   /** Base API URL for Coinlore */
-  private static API_URL = 'https://api.coinlore.net/api';
-  
+  private static API_URL = "https://api.coinlore.net/api";
+
   /** Singleton instance */
   protected static instance: CoinloreApiService;
 
@@ -70,7 +70,7 @@ class CoinloreApiService extends BaseApiService {
       start: 0,
       limit: 100,
     };
-    return this.get<{ data: Ticker[] }>('/tickers/', {
+    return this.get<{ data: Ticker[] }>("/tickers/", {
       params: { ...defaultParams, ...params },
     });
   }
@@ -81,7 +81,7 @@ class CoinloreApiService extends BaseApiService {
    * @returns {Promise<Ticker[]>} Promise resolving to the ticker data
    */
   async getTicker(id: string | number): Promise<Ticker[]> {
-    return this.get<Ticker[]>('/ticker/', {
+    return this.get<Ticker[]>("/ticker/", {
       params: { id },
     });
   }
@@ -92,8 +92,8 @@ class CoinloreApiService extends BaseApiService {
    * @returns {Promise<Ticker[]>} Promise resolving to an array of ticker data
    */
   async getTickersByIds(ids: (string | number)[]): Promise<Ticker[]> {
-    return this.get<Ticker[]>('/ticker/', {
-      params: { id: ids.join(',') },
+    return this.get<Ticker[]>("/ticker/", {
+      params: { id: ids.join(",") },
     });
   }
 
@@ -102,7 +102,7 @@ class CoinloreApiService extends BaseApiService {
    * @returns {Promise<GlobalData[]>} Promise resolving to global market data
    */
   async getGlobalData(): Promise<GlobalData[]> {
-    return this.get<GlobalData[]>('/global/');
+    return this.get<GlobalData[]>("/global/");
   }
 
   /**
@@ -115,7 +115,7 @@ class CoinloreApiService extends BaseApiService {
       start: 0,
       limit: 100,
     };
-    return this.get<Exchange[]>('/exchanges/', {
+    return this.get<Exchange[]>("/exchanges/", {
       params: { ...defaultParams, ...params },
     });
   }

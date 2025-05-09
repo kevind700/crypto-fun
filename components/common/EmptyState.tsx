@@ -1,15 +1,15 @@
 /**
  * EmptyState Component
- * 
+ *
  * This component displays a message when there is no content to show,
  * such as an empty list or search results with no matches.
- * 
+ *
  * It provides a consistent empty state display across the application.
  */
 
-import React, { memo } from 'react';
-import { Text, View } from 'react-native';
-import { styles } from './EmptyState.styles';
+import React, { memo } from "react";
+import { Text, View } from "react-native";
+import { styles } from "./EmptyState.styles";
 
 /**
  * EmptyState component props
@@ -34,4 +34,4 @@ const EmptyState: React.FC<EmptyStateProps> = ({ message }) => {
 };
 
 // Memoize the component to prevent unnecessary re-renders
-export default memo(EmptyState); 
+export default memo(EmptyState);

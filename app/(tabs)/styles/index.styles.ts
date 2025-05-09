@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { LAYOUT, TYPOGRAPHY } from '../../../constants';
+import { StyleSheet } from "react-native";
+import { LAYOUT, TYPOGRAPHY } from "../../../constants";
 
 export const styles = StyleSheet.create({
   container: {
@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     borderRadius: LAYOUT.BORDER_RADIUS_LG,
     marginBottom: LAYOUT.SPACING_LG,
     elevation: 2,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   cardTitle: {
     padding: LAYOUT.SPACING_LG,
@@ -20,8 +20,8 @@ export const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.FONT_WEIGHT_BOLD,
   },
   metricsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: LAYOUT.SPACING_LG,
     paddingBottom: LAYOUT.SPACING_LG,
   },
@@ -39,12 +39,12 @@ export const styles = StyleSheet.create({
     marginBottom: LAYOUT.SPACING_SM,
   },
   changeBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: LAYOUT.SPACING_SM,
     paddingVertical: LAYOUT.SPACING_XS,
     borderRadius: LAYOUT.BORDER_RADIUS_SM,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
   },
   changeText: {
     fontSize: TYPOGRAPHY.FONT_SIZE_SM,
@@ -61,11 +61,11 @@ export const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.FONT_SIZE_SM,
   },
   dominanceMetrics: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   dominanceItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   dominanceValue: {
     fontSize: TYPOGRAPHY.FONT_SIZE_MD,
@@ -78,16 +78,16 @@ export const styles = StyleSheet.create({
     marginTop: LAYOUT.SPACING_XS,
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     paddingHorizontal: LAYOUT.SPACING_LG,
     paddingBottom: LAYOUT.SPACING_LG,
     paddingTop: LAYOUT.SPACING_SM,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.05)',
+    borderTopColor: "rgba(0,0,0,0.05)",
   },
   statItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   statValue: {
     fontSize: TYPOGRAPHY.FONT_SIZE_MD,
@@ -101,25 +101,25 @@ export const styles = StyleSheet.create({
   },
   statDivider: {
     width: 1,
-    height: '100%',
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    height: "100%",
+    backgroundColor: "rgba(0,0,0,0.05)",
   },
   moversContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     padding: LAYOUT.SPACING_LG,
   },
   moverItem: {
-    width: '48%',
-    backgroundColor: 'rgba(0,0,0,0.02)',
+    width: "48%",
+    backgroundColor: "rgba(0,0,0,0.02)",
     borderRadius: LAYOUT.BORDER_RADIUS_MD,
     padding: LAYOUT.SPACING_MD,
-    margin: '1%',
+    margin: "1%",
   },
   moverHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: LAYOUT.SPACING_XS,
   },
   moverSymbol: {
@@ -134,4 +134,4 @@ export const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.FONT_SIZE_SM,
     opacity: 0.7,
   },
-}); 
+});

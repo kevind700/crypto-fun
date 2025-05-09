@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Menu, Button, Text, Surface, useTheme, IconButton } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState } from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Menu,
+  Button,
+  Text,
+  Surface,
+  useTheme,
+  IconButton,
+} from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export type SortOption<T extends string> = {
   field: T;
@@ -25,8 +32,10 @@ function SortSelector<T extends string>({
 }: SortSelectorProps<T>) {
   const theme = useTheme();
   const [menuVisible, setMenuVisible] = useState(false);
-  
-  const currentOption = sortOptions.find(option => option.field === currentSortField);
+
+  const currentOption = sortOptions.find(
+    (option) => option.field === currentSortField,
+  );
 
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
@@ -38,17 +47,14 @@ function SortSelector<T extends string>({
           visible={menuVisible}
           onDismiss={closeMenu}
           anchor={
-            <TouchableOpacity 
-              onPress={openMenu}
-              style={styles.fieldSelector}
-            >
+            <TouchableOpacity onPress={openMenu} style={styles.fieldSelector}>
               <Text style={styles.selectorText}>
-                Sort by: {currentOption?.label || 'Rank'}
+                Sort by: {currentOption?.label || "Rank"}
               </Text>
-              <MaterialCommunityIcons 
-                name="chevron-down" 
-                size={18} 
-                color="#CBD5E1" 
+              <MaterialCommunityIcons
+                name="chevron-down"
+                size={18}
+                color="#CBD5E1"
               />
             </TouchableOpacity>
           }
@@ -64,11 +70,12 @@ function SortSelector<T extends string>({
               title={option.label}
               titleStyle={[
                 styles.menuItemText,
-                currentSortField === option.field && styles.selectedMenuItemText
+                currentSortField === option.field &&
+                  styles.selectedMenuItemText,
               ]}
               style={[
                 styles.menuItem,
-                currentSortField === option.field && styles.selectedMenuItem
+                currentSortField === option.field && styles.selectedMenuItem,
               ]}
               leadingIcon={
                 currentSortField === option.field ? "check" : undefined
@@ -79,14 +86,14 @@ function SortSelector<T extends string>({
 
         <View style={styles.divider} />
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={onDirectionChange}
           style={styles.directionButton}
         >
-          <MaterialCommunityIcons 
-            name={isAscending ? "sort-ascending" : "sort-descending"} 
-            size={22} 
-            color="#60A5FA" 
+          <MaterialCommunityIcons
+            name={isAscending ? "sort-ascending" : "sort-descending"}
+            size={22}
+            color="#60A5FA"
           />
         </TouchableOpacity>
       </View>
@@ -99,70 +106,70 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginVertical: 12,
     borderRadius: 12,
-    backgroundColor: '#1A2234',
+    backgroundColor: "#1A2234",
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
     borderWidth: 1,
-    borderColor: '#2A3346',
+    borderColor: "#2A3346",
   },
   sortSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     height: 48,
   },
   fieldSelector: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     height: 48,
   },
   selectorText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     letterSpacing: 0.3,
   },
   divider: {
     width: 1,
     height: 24,
-    backgroundColor: '#374151',
+    backgroundColor: "#374151",
   },
   directionButton: {
     width: 48,
     height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(96, 165, 250, 0.1)',
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(96, 165, 250, 0.1)",
   },
   menuContent: {
-    backgroundColor: '#1A2234',
+    backgroundColor: "#1A2234",
     marginTop: 8,
     borderRadius: 10,
     width: 200,
     borderWidth: 1,
-    borderColor: '#2A3346',
+    borderColor: "#2A3346",
     elevation: 8,
   },
   menuItem: {
     height: 44,
   },
   selectedMenuItem: {
-    backgroundColor: 'rgba(96, 165, 250, 0.15)',
+    backgroundColor: "rgba(96, 165, 250, 0.15)",
     borderLeftWidth: 3,
-    borderLeftColor: '#60A5FA',
+    borderLeftColor: "#60A5FA",
   },
   menuItemText: {
-    color: '#CBD5E1',
+    color: "#CBD5E1",
   },
   selectedMenuItemText: {
-    color: '#60A5FA',
-    fontWeight: 'bold',
+    color: "#60A5FA",
+    fontWeight: "bold",
     letterSpacing: 0.3,
   },
 });

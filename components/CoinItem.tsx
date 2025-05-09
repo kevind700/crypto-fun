@@ -1,18 +1,22 @@
 /**
  * CoinItem Component
- * 
+ *
  * This component displays a cryptocurrency item in a list.
  * It shows the rank, symbol, name, price, and 24-hour price change
  * with appropriate color coding based on the price movement.
- * 
+ *
  * The component is designed to be used within FlatList or similar list components.
  */
 
-import React, { memo } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { Ticker } from '../models/types/crypto';
-import { formatPercentChange, formatPrice, getChangeColor } from '../utils/formatters';
-import { styles } from './CoinItem.styles';
+import React, { memo } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { Ticker } from "../models/types/crypto";
+import {
+  formatPercentChange,
+  formatPrice,
+  getChangeColor,
+} from "../utils/formatters";
+import { styles } from "./CoinItem.styles";
 
 /**
  * CoinItem component props
@@ -32,10 +36,7 @@ interface CoinItemProps {
  */
 const CoinItem: React.FC<CoinItemProps> = ({ coin, onSelect }) => {
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={() => onSelect(coin)}
-    >
+    <TouchableOpacity style={styles.container} onPress={() => onSelect(coin)}>
       {/* Left section with rank and name information */}
       <View style={styles.leftSection}>
         <Text style={styles.rank}>#{coin.rank}</Text>
@@ -47,10 +48,13 @@ const CoinItem: React.FC<CoinItemProps> = ({ coin, onSelect }) => {
 
       {/* Right section with price and change information */}
       <View style={styles.rightSection}>
-        <Text style={styles.price}>
-          ${formatPrice(coin.price_usd)}
-        </Text>
-        <Text style={[styles.change, { color: getChangeColor(coin.percent_change_24h) }]}>
+        <Text style={styles.price}>${formatPrice(coin.price_usd)}</Text>
+        <Text
+          style={[
+            styles.change,
+            { color: getChangeColor(coin.percent_change_24h) },
+          ]}
+        >
           {formatPercentChange(coin.percent_change_24h)}
         </Text>
       </View>

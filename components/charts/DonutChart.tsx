@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
-import Svg, { G, Circle, Text as SvgText } from 'react-native-svg';
+import React from "react";
+import { View, StyleSheet, Dimensions } from "react-native";
+import { Text, useTheme } from "react-native-paper";
+import Svg, { G, Circle, Text as SvgText } from "react-native-svg";
 
 interface DonutChartProps {
   data: {
@@ -17,7 +17,7 @@ interface DonutChartProps {
 
 const DonutChart: React.FC<DonutChartProps> = ({
   data,
-  width = Dimensions.get('window').width - 32,
+  width = Dimensions.get("window").width - 32,
   height = 220,
   strokeWidth = 40,
   radius = 80,
@@ -42,17 +42,18 @@ const DonutChart: React.FC<DonutChartProps> = ({
   const circles = data.map((item, index) => {
     const percentage = (item.value / total) * 100;
     const angle = (percentage / 100) * 360;
-    
+
     // Calculate angle for labels
-    const midAngle = ((currentAngle + (currentAngle + angle)) / 2) * (Math.PI / 180);
+    const midAngle =
+      ((currentAngle + (currentAngle + angle)) / 2) * (Math.PI / 180);
     const labelRadius = radius + 10;
     const labelX = centerX + labelRadius * Math.cos(midAngle);
     const labelY = centerY + labelRadius * Math.sin(midAngle);
-    
+
     // Calculate the arc
     const startAngle = currentAngle;
     currentAngle += angle;
-    
+
     return (
       <G key={index}>
         <Circle
@@ -71,8 +72,9 @@ const DonutChart: React.FC<DonutChartProps> = ({
           fontSize="12"
           fill={theme.colors.onSurface.toString()}
           textAnchor="middle"
-          alignmentBaseline="middle">
-          {percentage > 5 ? `${percentage.toFixed(0)}%` : ''}
+          alignmentBaseline="middle"
+        >
+          {percentage > 5 ? `${percentage.toFixed(0)}%` : ""}
         </SvgText>
       </G>
     );
@@ -99,18 +101,18 @@ const DonutChart: React.FC<DonutChartProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   legend: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
     marginTop: 16,
   },
   legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: 8,
     marginVertical: 4,
   },

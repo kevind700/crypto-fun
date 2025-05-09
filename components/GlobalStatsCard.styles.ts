@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { COLORS, LAYOUT, TYPOGRAPHY } from '../constants';
+import { StyleSheet } from "react-native";
+import { COLORS, LAYOUT, TYPOGRAPHY } from "../constants";
 
 export const styles = StyleSheet.create({
   container: {
@@ -13,11 +13,11 @@ export const styles = StyleSheet.create({
     marginBottom: LAYOUT.SPACING_LG,
   },
   statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   statItem: {
-    width: '50%',
+    width: "50%",
     marginBottom: LAYOUT.SPACING_LG,
   },
   statLabel: {
@@ -28,4 +28,4 @@ export const styles = StyleSheet.create({
     fontSize: TYPOGRAPHY.FONT_SIZE_MD,
     fontWeight: TYPOGRAPHY.FONT_WEIGHT_BOLD,
   },
-}); 
+});

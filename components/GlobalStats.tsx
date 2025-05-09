@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { GlobalData } from '../models/types/crypto';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { GlobalData } from "../models/types/crypto";
 
 interface GlobalStatsProps {
   data: GlobalData;
@@ -8,9 +8,9 @@ interface GlobalStatsProps {
 
 const GlobalStats: React.FC<GlobalStatsProps> = ({ data }) => {
   const formatNumber = (num: number) => {
-    if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
-    if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
-    if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+    if (num >= 1e12) return (num / 1e12).toFixed(2) + "T";
+    if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
+    if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
     return num.toLocaleString();
   };
 
@@ -31,21 +31,33 @@ const GlobalStats: React.FC<GlobalStatsProps> = ({ data }) => {
         <View style={styles.stat}>
           <Text style={styles.label}>Market Cap</Text>
           <Text style={styles.value}>${formatNumber(data.total_mcap)}</Text>
-          <Text style={[
-            styles.change,
-            { color: parseFloat(data.mcap_change) >= 0 ? '#4CAF50' : '#FF5252' }
-          ]}>
-            {parseFloat(data.mcap_change) >= 0 ? '+' : ''}{data.mcap_change}%
+          <Text
+            style={[
+              styles.change,
+              {
+                color:
+                  parseFloat(data.mcap_change) >= 0 ? "#4CAF50" : "#FF5252",
+              },
+            ]}
+          >
+            {parseFloat(data.mcap_change) >= 0 ? "+" : ""}
+            {data.mcap_change}%
           </Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.label}>24h Volume</Text>
           <Text style={styles.value}>${formatNumber(data.total_volume)}</Text>
-          <Text style={[
-            styles.change,
-            { color: parseFloat(data.volume_change) >= 0 ? '#4CAF50' : '#FF5252' }
-          ]}>
-            {parseFloat(data.volume_change) >= 0 ? '+' : ''}{data.volume_change}%
+          <Text
+            style={[
+              styles.change,
+              {
+                color:
+                  parseFloat(data.volume_change) >= 0 ? "#4CAF50" : "#FF5252",
+              },
+            ]}
+          >
+            {parseFloat(data.volume_change) >= 0 ? "+" : ""}
+            {data.volume_change}%
           </Text>
         </View>
       </View>
@@ -66,28 +78,28 @@ const GlobalStats: React.FC<GlobalStatsProps> = ({ data }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 16,
     marginBottom: 8,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
   stat: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   label: {
     fontSize: 12,
-    color: '#666',
+    color: "#666",
     marginBottom: 4,
   },
   value: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   change: {
     fontSize: 12,

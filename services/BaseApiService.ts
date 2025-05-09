@@ -1,17 +1,17 @@
 /**
  * BaseApiService
- * 
+ *
  * This is a base abstract class for API services that provides common HTTP request functionality.
  * It uses axios for making HTTP requests and includes:
  * - Request/response interceptors with error handling
  * - Common HTTP methods (GET, POST)
  * - Consistent response formatting
- * 
+ *
  * This base service follows best practices for organizing API interactions in React Native
  * applications and can be extended by specific API services.
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 
 /**
  * Abstract class for API services
@@ -20,7 +20,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 class BaseApiService {
   /** Axios instance for making HTTP requests */
   protected readonly api: AxiosInstance;
-  
+
   /** Base instance for singleton pattern */
   protected static instance: BaseApiService;
 
@@ -32,9 +32,9 @@ class BaseApiService {
     // Initialize axios with common configuration
     this.api = axios.create({
       baseURL,
-      timeout: 30000,  // 30 seconds timeout
+      timeout: 30000, // 30 seconds timeout
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -49,30 +49,30 @@ class BaseApiService {
   protected setupInterceptors(): void {
     // Request interceptor
     this.api.interceptors.request.use(
-      (config) => config,  // Pass through config
-      (error) => Promise.reject(error)  // Reject on error
+      (config) => config, // Pass through config
+      (error) => Promise.reject(error), // Reject on error
     );
 
     // Response interceptor
     this.api.interceptors.response.use(
-      (response) => response,  // Pass through response
+      (response) => response, // Pass through response
       (error) => {
         // Handle common error responses
         if (error.response) {
           const { status } = error.response;
           switch (status) {
             case 429:
-              console.error('Rate limit exceeded');
+              console.error("Rate limit exceeded");
               break;
             case 500:
-              console.error('Server error');
+              console.error("Server error");
               break;
             default:
               console.error(`API Error: ${status}`);
           }
         }
-        return Promise.reject(error);  // Re-throw the error
-      }
+        return Promise.reject(error); // Re-throw the error
+      },
     );
   }
 
@@ -96,7 +96,11 @@ class BaseApiService {
    * @returns {Promise<T>} Promise resolving to the response data
    * @template T The expected response data type
    */
-  protected async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  protected async post<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<T> {
     const response = await this.api.post<T>(url, data, config);
     return response.data;
   }

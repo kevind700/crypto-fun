@@ -1,27 +1,33 @@
 /**
  * MarketOverview Component
- * 
+ *
  * This component serves as the main market overview screen that displays:
  * - Global cryptocurrency market statistics via GlobalStatsCard
  * - Top gaining and losing cryptocurrencies via TopMoversCard
  * - A complete list of cryptocurrencies with their key metrics
- * 
+ *
  * It supports pull-to-refresh functionality and handles loading states,
  * empty states, and error states appropriately.
- * 
+ *
  * The component is memoized to prevent unnecessary re-renders.
  */
 
-import React, { memo } from 'react';
-import { ActivityIndicator, FlatList, RefreshControl, Text, View } from 'react-native';
-import { COLORS } from '../constants';
-import { useCrypto } from '../contexts/CryptoContext';
-import CoinItem from './CoinItem';
-import EmptyState from './common/EmptyState';
-import ErrorMessage from './common/ErrorMessage';
-import GlobalStatsCard from './GlobalStatsCard';
-import { styles } from './MarketOverview.styles';
-import TopMoversCard from './TopMoversCard';
+import React, { memo } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
+import { COLORS } from "../constants";
+import { useCrypto } from "../contexts/CryptoContext";
+import CoinItem from "./CoinItem";
+import EmptyState from "./common/EmptyState";
+import ErrorMessage from "./common/ErrorMessage";
+import GlobalStatsCard from "./GlobalStatsCard";
+import { styles } from "./MarketOverview.styles";
+import TopMoversCard from "./TopMoversCard";
 
 /**
  * MarketOverview component displays cryptocurrency market data and listings
@@ -29,15 +35,15 @@ import TopMoversCard from './TopMoversCard';
  */
 const MarketOverview: React.FC = () => {
   // Get data and functions from the CryptoContext
-  const { 
-    tickers, 
-    globalData, 
-    isLoading, 
-    error, 
+  const {
+    tickers,
+    globalData,
+    isLoading,
+    error,
     refreshData,
     setSelectedCoin,
     topGainers,
-    topLosers
+    topLosers,
   } = useCrypto();
 
   // Handle error state - show error message if API request failed
@@ -78,25 +84,25 @@ const MarketOverview: React.FC = () => {
     <>
       {/* Global market statistics card - only shown if data is available */}
       {globalData && <GlobalStatsCard data={globalData} />}
-      
+
       {/* Top gainers card - only shown if there are gainers to display */}
       {topGainers.length > 0 && (
-        <TopMoversCard 
-          title="Top Gainers (24h)" 
+        <TopMoversCard
+          title="Top Gainers (24h)"
           data={topGainers}
           onSelectCoin={setSelectedCoin}
         />
       )}
-      
+
       {/* Top losers card - only shown if there are losers to display */}
       {topLosers.length > 0 && (
-        <TopMoversCard 
-          title="Top Losers (24h)" 
+        <TopMoversCard
+          title="Top Losers (24h)"
           data={topLosers}
           onSelectCoin={setSelectedCoin}
         />
       )}
-      
+
       {/* Section title for the full cryptocurrency list */}
       <Text style={styles.sectionTitle}>All Cryptocurrencies</Text>
     </>
@@ -108,10 +114,7 @@ const MarketOverview: React.FC = () => {
       <FlatList
         data={tickers}
         renderItem={({ item }) => (
-          <CoinItem 
-            coin={item} 
-            onSelect={setSelectedCoin}
-          />
+          <CoinItem coin={item} onSelect={setSelectedCoin} />
         )}
         keyExtractor={(item) => item.id}
         refreshControl={

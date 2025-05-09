@@ -1,7 +1,7 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, StatusBar } from 'react-native';
-import { CryptoProvider } from './contexts/CryptoContext';
-import MarketOverview from './components/MarketOverview';
+import React from "react";
+import { SafeAreaView, StyleSheet, StatusBar } from "react-native";
+import { CryptoProvider } from "./contexts/CryptoContext";
+import MarketOverview from "./components/MarketOverview";
 
 const App: React.FC = () => {
   return (
@@ -17,7 +17,7 @@ const App: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
 });
 

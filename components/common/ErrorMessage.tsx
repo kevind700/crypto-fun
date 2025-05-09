@@ -1,16 +1,16 @@
 /**
  * ErrorMessage Component
- * 
+ *
  * This component displays an error message to the user when
  * something goes wrong in the application, such as API failures
  * or data loading errors.
- * 
+ *
  * It provides a consistent error display across the application.
  */
 
-import React, { memo } from 'react';
-import { Text, View } from 'react-native';
-import { styles } from './ErrorMessage.styles';
+import React, { memo } from "react";
+import { Text, View } from "react-native";
+import { styles } from "./ErrorMessage.styles";
 
 /**
  * ErrorMessage component props
@@ -35,4 +35,4 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ message }) => {
 };
 
 // Memoize the component to prevent unnecessary re-renders
-export default memo(ErrorMessage); 
+export default memo(ErrorMessage);

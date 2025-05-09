@@ -1,19 +1,25 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React, { memo, useEffect, useState } from 'react';
-import { FlatList, Linking, View } from 'react-native';
-import { Searchbar, Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import SortModal, { SortOption } from '../../components/common/SortModal';
-import { Exchange } from '../../models/types/crypto';
-import CoinloreApiService from '../../services/CoinloreApiService';
-import { styles } from './styles/exchanges.styles';
-import { formatVolume } from './utils/formatters';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React, { memo, useEffect, useState } from "react";
+import { FlatList, Linking, View } from "react-native";
+import {
+  Searchbar,
+  Surface,
+  Text,
+  TouchableRipple,
+  useTheme,
+} from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
+import SortModal, { SortOption } from "../../components/common/SortModal";
+import { Exchange } from "../../models/types/crypto";
+import CoinloreApiService from "../../services/CoinloreApiService";
+import { styles } from "./styles/exchanges.styles";
+import { formatVolume } from "./utils/formatters";
 
-type SortField = 'rank' | 'volume_usd' | 'active_pairs';
+type SortField = "rank" | "volume_usd" | "active_pairs";
 
 const sortOptions: SortOption<SortField>[] = [
-  { field: 'volume_usd', label: 'Volume' },
-  { field: 'active_pairs', label: 'Pairs' },
+  { field: "volume_usd", label: "Volume" },
+  { field: "active_pairs", label: "Pairs" },
 ];
 
 const ExchangeItem = memo(({ item }: { item: Exchange }) => {
@@ -29,14 +35,14 @@ const ExchangeItem = memo(({ item }: { item: Exchange }) => {
               {item.name}
             </Text>
             <View style={styles.locationContainer}>
-              <MaterialCommunityIcons 
-                name="map-marker" 
-                size={14} 
-                color="#94A3B8" 
+              <MaterialCommunityIcons
+                name="map-marker"
+                size={14}
+                color="#94A3B8"
                 style={styles.locationIcon}
               />
               <Text variant="labelMedium" style={styles.locationText}>
-                {item.country || 'Unknown location'}
+                {item.country || "Unknown location"}
               </Text>
             </View>
           </View>
@@ -44,34 +50,38 @@ const ExchangeItem = memo(({ item }: { item: Exchange }) => {
 
         <View style={styles.statsContainer}>
           <View style={styles.stat}>
-            <MaterialCommunityIcons 
-              name="chart-line" 
-              size={20} 
+            <MaterialCommunityIcons
+              name="chart-line"
+              size={20}
               color="#60A5FA"
             />
             <Text variant="titleMedium" style={styles.statValue}>
               {volume}
             </Text>
-            <Text variant="labelSmall" style={styles.statLabel}>Volume (24h)</Text>
+            <Text variant="labelSmall" style={styles.statLabel}>
+              Volume (24h)
+            </Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.stat}>
-            <MaterialCommunityIcons 
-              name="swap-horizontal" 
-              size={20} 
+            <MaterialCommunityIcons
+              name="swap-horizontal"
+              size={20}
               color="#60A5FA"
             />
             <Text variant="titleMedium" style={styles.statValue}>
               {Number(pairs).toLocaleString()}
             </Text>
-            <Text variant="labelSmall" style={styles.statLabel}>Active Pairs</Text>
+            <Text variant="labelSmall" style={styles.statLabel}>
+              Active Pairs
+            </Text>
           </View>
         </View>
 
         <View style={styles.footer}>
-          <MaterialCommunityIcons 
-            name="open-in-new" 
-            size={16} 
+          <MaterialCommunityIcons
+            name="open-in-new"
+            size={16}
             color="#60A5FA"
           />
           <Text variant="labelMedium" style={styles.visitText}>
@@ -92,7 +102,10 @@ const EmptyListComponent = memo(() => {
         size={48}
         color={theme.colors.error}
       />
-      <Text variant="titleMedium" style={[styles.emptyText, { color: theme.colors.error }]}>
+      <Text
+        variant="titleMedium"
+        style={[styles.emptyText, { color: theme.colors.error }]}
+      >
         No exchanges found
       </Text>
     </View>
@@ -103,8 +116,8 @@ const Exchanges = () => {
   const theme = useTheme();
   const [exchanges, setExchanges] = useState<Exchange[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortField, setSortField] = useState<SortField>('volume_usd');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortField, setSortField] = useState<SortField>("volume_usd");
   const [sortAsc, setSortAsc] = useState(false);
 
   useEffect(() => {
@@ -118,7 +131,7 @@ const Exchanges = () => {
       const exchangesArray = Object.values(data || {});
       setExchanges(exchangesArray);
     } catch (error) {
-      console.error('Failed to load exchanges:', error);
+      console.error("Failed to load exchanges:", error);
       setExchanges([]);
     } finally {
       setIsLoading(false);
@@ -135,8 +148,8 @@ const Exchanges = () => {
     setSortAsc(!sortAsc);
   };
 
-  const filteredExchanges = exchanges.filter(exchange =>
-    exchange.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredExchanges = exchanges.filter((exchange) =>
+    exchange.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const sortedExchanges = [...filteredExchanges].sort((a, b) => {
@@ -147,9 +160,9 @@ const Exchanges = () => {
   });
 
   return (
-    <SafeAreaView 
+    <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['top']}
+      edges={["top"]}
     >
       <View style={styles.headerContainer}>
         <View style={styles.headerControls}>
@@ -157,25 +170,28 @@ const Exchanges = () => {
             placeholder="Search exchanges..."
             onChangeText={setSearchQuery}
             value={searchQuery}
-            style={[styles.searchBar, { 
-              backgroundColor: 'rgba(30, 41, 59, 0.8)',
-              borderRadius: 20,
-              elevation: 0,
-              height: 44,
-              borderWidth: 1,
-              borderColor: 'rgba(96, 165, 250, 0.2)',
-            }]}
+            style={[
+              styles.searchBar,
+              {
+                backgroundColor: "rgba(30, 41, 59, 0.8)",
+                borderRadius: 20,
+                elevation: 0,
+                height: 44,
+                borderWidth: 1,
+                borderColor: "rgba(96, 165, 250, 0.2)",
+              },
+            ]}
             icon="magnify"
             iconColor="#60A5FA"
-            inputStyle={{ 
-              color: '#FFFFFF', 
+            inputStyle={{
+              color: "#FFFFFF",
               fontSize: 14,
-              alignSelf: 'center',
-              marginLeft: -5
+              alignSelf: "center",
+              marginLeft: -5,
             }}
             placeholderTextColor="rgba(148, 163, 184, 0.8)"
           />
-          
+
           <SortModal
             sortOptions={sortOptions}
             currentSortField={sortField}
@@ -184,12 +200,14 @@ const Exchanges = () => {
             onDirectionChange={handleDirectionChange}
           />
         </View>
-        
+
         {sortedExchanges.length > 0 && (
           <View style={styles.sortInfoContainer}>
             <Text style={styles.sortInfoText}>
-              Sorting by: {sortOptions.find(option => option.field === sortField)?.label || 'Volume'} 
-              {sortAsc ? ' (Ascending)' : ' (Descending)'}
+              Sorting by:{" "}
+              {sortOptions.find((option) => option.field === sortField)
+                ?.label || "Volume"}
+              {sortAsc ? " (Ascending)" : " (Descending)"}
             </Text>
           </View>
         )}

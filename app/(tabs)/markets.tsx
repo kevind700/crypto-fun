@@ -1,45 +1,54 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React, { memo, useEffect, useState } from 'react';
-import { FlatList, TouchableOpacity, View } from 'react-native';
-import { Searchbar, Surface, Text, useTheme } from 'react-native-paper';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import SortModal, { SortOption } from '../../components/common/SortModal';
-import { useCrypto } from '../../contexts/CryptoContext';
-import { Ticker } from '../../models/types/crypto';
-import { styles } from './styles/markets.styles';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React, { memo, useEffect, useState } from "react";
+import { FlatList, TouchableOpacity, View } from "react-native";
+import { Searchbar, Surface, Text, useTheme } from "react-native-paper";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+import SortModal, { SortOption } from "../../components/common/SortModal";
+import { useCrypto } from "../../contexts/CryptoContext";
+import { Ticker } from "../../models/types/crypto";
+import { styles } from "./styles/markets.styles";
 import {
   formatPercentChange,
   formatValue,
   getChangeBackgroundColor,
   getChangeBorderColor,
-  getChangeColor
-} from './utils/formatters';
+  getChangeColor,
+} from "./utils/formatters";
 
-type SortField = 'rank' | 'price_usd' | 'percent_change_24h' | 'volume24' | 'market_cap_usd';
+type SortField =
+  | "rank"
+  | "price_usd"
+  | "percent_change_24h"
+  | "volume24"
+  | "market_cap_usd";
 
 const sortOptions: SortOption<SortField>[] = [
-  { field: 'rank', label: 'Rank' },
-  { field: 'price_usd', label: 'Price' },
-  { field: 'percent_change_24h', label: 'Change' },
-  { field: 'volume24', label: 'Volume' },
-  { field: 'market_cap_usd', label: 'Mkt Cap' },
+  { field: "rank", label: "Rank" },
+  { field: "price_usd", label: "Price" },
+  { field: "percent_change_24h", label: "Change" },
+  { field: "volume24", label: "Volume" },
+  { field: "market_cap_usd", label: "Mkt Cap" },
 ];
 
 const CoinItem = memo(({ item }: { item: Ticker }) => {
   const priceChange = parseFloat(item.percent_change_24h);
   const isPositive = priceChange >= 0;
-  
+
   const handleCoinPress = () => {
     router.push({
       pathname: "/coin-detail",
-      params: { id: item.id }
+      params: { id: item.id },
     });
   };
 
   return (
-    <Animated.View entering={FadeInDown.duration(400).delay(Number(item.rank) * 20).springify()}>
+    <Animated.View
+      entering={FadeInDown.duration(400)
+        .delay(Number(item.rank) * 20)
+        .springify()}
+    >
       <TouchableOpacity onPress={handleCoinPress}>
         <Surface style={styles.coinCard}>
           <View style={styles.coinHeader}>
@@ -48,26 +57,38 @@ const CoinItem = memo(({ item }: { item: Ticker }) => {
                 <Text style={styles.rank}>{item.rank}</Text>
               </View>
               <View>
-                <Text variant="titleMedium" style={styles.symbol}>{item.symbol}</Text>
-                <Text variant="bodySmall" style={styles.name} numberOfLines={1}>{item.name}</Text>
+                <Text variant="titleMedium" style={styles.symbol}>
+                  {item.symbol}
+                </Text>
+                <Text variant="bodySmall" style={styles.name} numberOfLines={1}>
+                  {item.name}
+                </Text>
               </View>
             </View>
             <View style={styles.priceInfo}>
               <Text variant="titleMedium" style={styles.price}>
-                ${Number(parseFloat(item.price_usd)).toLocaleString(undefined, {
+                $
+                {Number(parseFloat(item.price_usd)).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
-                  maximumFractionDigits: 6
+                  maximumFractionDigits: 6,
                 })}
               </Text>
-              <View style={[styles.changeContainer, { 
-                backgroundColor: getChangeBackgroundColor(item.percent_change_24h),
-                borderWidth: 1,
-                borderColor: getChangeBorderColor(item.percent_change_24h)
-              }]}>
-                <MaterialCommunityIcons 
-                  name={isPositive ? "trending-up" : "trending-down"} 
-                  size={14} 
-                  color={getChangeColor(item.percent_change_24h)} 
+              <View
+                style={[
+                  styles.changeContainer,
+                  {
+                    backgroundColor: getChangeBackgroundColor(
+                      item.percent_change_24h,
+                    ),
+                    borderWidth: 1,
+                    borderColor: getChangeBorderColor(item.percent_change_24h),
+                  },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name={isPositive ? "trending-up" : "trending-down"}
+                  size={14}
+                  color={getChangeColor(item.percent_change_24h)}
                   style={{ marginRight: 4 }}
                 />
                 <Text
@@ -75,7 +96,8 @@ const CoinItem = memo(({ item }: { item: Ticker }) => {
                   style={[
                     styles.change,
                     { color: getChangeColor(item.percent_change_24h) },
-                  ]}>
+                  ]}
+                >
                   {formatPercentChange(item.percent_change_24h)}
                 </Text>
               </View>
@@ -84,10 +106,10 @@ const CoinItem = memo(({ item }: { item: Ticker }) => {
 
           <View style={styles.statsContainer}>
             <View style={styles.stat}>
-              <MaterialCommunityIcons 
-                name="chart-pie" 
-                size={16} 
-                color="#60A5FA" 
+              <MaterialCommunityIcons
+                name="chart-pie"
+                size={16}
+                color="#60A5FA"
                 style={styles.statIcon}
               />
               <View style={styles.statTextContainer}>
@@ -99,10 +121,10 @@ const CoinItem = memo(({ item }: { item: Ticker }) => {
             </View>
             <View style={styles.statDivider} />
             <View style={styles.stat}>
-              <MaterialCommunityIcons 
-                name="chart-bar" 
-                size={16} 
-                color="#60A5FA" 
+              <MaterialCommunityIcons
+                name="chart-bar"
+                size={16}
+                color="#60A5FA"
                 style={styles.statIcon}
               />
               <View style={styles.statTextContainer}>
@@ -128,7 +150,10 @@ const EmptyListComponent = memo(() => {
         size={48}
         color={theme.colors.error}
       />
-      <Text variant="titleMedium" style={[styles.emptyText, { color: theme.colors.error }]}>
+      <Text
+        variant="titleMedium"
+        style={[styles.emptyText, { color: theme.colors.error }]}
+      >
         No coins found
       </Text>
     </View>
@@ -138,9 +163,9 @@ const EmptyListComponent = memo(() => {
 const Markets = () => {
   const theme = useTheme();
   const { tickers } = useCrypto();
-  const [sortField, setSortField] = useState<SortField>('rank');
+  const [sortField, setSortField] = useState<SortField>("rank");
   const [sortAsc, setSortAsc] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [filteredTickers, setFilteredTickers] = useState<Ticker[]>([]);
 
   useEffect(() => {
@@ -168,7 +193,7 @@ const Markets = () => {
       const filtered = (tickers || []).filter(
         (coin) =>
           coin.name.toLowerCase().includes(lowercaseQuery) ||
-          coin.symbol.toLowerCase().includes(lowercaseQuery)
+          coin.symbol.toLowerCase().includes(lowercaseQuery),
       );
       setFilteredTickers(filtered);
     }
@@ -182,9 +207,9 @@ const Markets = () => {
   });
 
   return (
-    <SafeAreaView 
+    <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['top']}
+      edges={["top"]}
     >
       <View style={styles.headerContainer}>
         <View style={styles.headerControls}>
@@ -192,25 +217,28 @@ const Markets = () => {
             placeholder="Search coins..."
             onChangeText={handleSearch}
             value={searchQuery}
-            style={[styles.searchBar, { 
-              backgroundColor: 'rgba(30, 41, 59, 0.8)',
-              borderRadius: 20,
-              elevation: 0,
-              height: 44,
-              borderWidth: 1,
-              borderColor: 'rgba(96, 165, 250, 0.2)',
-            }]}
+            style={[
+              styles.searchBar,
+              {
+                backgroundColor: "rgba(30, 41, 59, 0.8)",
+                borderRadius: 20,
+                elevation: 0,
+                height: 44,
+                borderWidth: 1,
+                borderColor: "rgba(96, 165, 250, 0.2)",
+              },
+            ]}
             icon="magnify"
             iconColor="#60A5FA"
-            inputStyle={{ 
-              color: '#FFFFFF', 
+            inputStyle={{
+              color: "#FFFFFF",
               fontSize: 14,
-              alignSelf: 'center',
-              marginLeft: -5
+              alignSelf: "center",
+              marginLeft: -5,
             }}
             placeholderTextColor="rgba(148, 163, 184, 0.8)"
           />
-          
+
           <SortModal
             sortOptions={sortOptions}
             currentSortField={sortField}
@@ -219,12 +247,14 @@ const Markets = () => {
             onDirectionChange={handleDirectionChange}
           />
         </View>
-        
+
         {sortedTickers.length > 0 && (
           <View style={styles.sortInfoContainer}>
             <Text style={styles.sortInfoText}>
-              Sorting by: {sortOptions.find(option => option.field === sortField)?.label || 'Rank'} 
-              {sortAsc ? ' (Ascending)' : ' (Descending)'}
+              Sorting by:{" "}
+              {sortOptions.find((option) => option.field === sortField)
+                ?.label || "Rank"}
+              {sortAsc ? " (Ascending)" : " (Descending)"}
             </Text>
           </View>
         )}

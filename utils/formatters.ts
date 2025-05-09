@@ -1,7 +1,7 @@
 /**
  * Formatters Utility Module
- * 
- * This module provides helper functions for formatting values 
+ *
+ * This module provides helper functions for formatting values
  * consistently throughout the application, particularly for:
  * - Cryptocurrency prices
  * - Large numbers
@@ -9,7 +9,7 @@
  * - Color coding for positive/negative changes
  */
 
-import { COLORS } from '../constants';
+import { COLORS } from "../constants";
 
 /**
  * Formats a cryptocurrency price with appropriate decimal places
@@ -30,7 +30,7 @@ export const formatPrice = (priceUsd: string): string => {
  * @returns {string} Formatted number string
  */
 export const formatLargeNumber = (value: number | string): string => {
-  const num = typeof value === 'string' ? Number(value) : value;
+  const num = typeof value === "string" ? Number(value) : value;
   return num.toLocaleString();
 };
 
@@ -41,7 +41,7 @@ export const formatLargeNumber = (value: number | string): string => {
  */
 export const formatPercentChange = (percentChange: string): string => {
   const isPositive = parseFloat(percentChange) >= 0;
-  return `${isPositive ? '+' : ''}${percentChange}%`;
+  return `${isPositive ? "+" : ""}${percentChange}%`;
 };
 
 /**

@@ -1,6 +1,6 @@
 /**
  * Crypto Context Provider
- * 
+ *
  * This module creates a React context for managing cryptocurrency data across the application.
  * It provides:
  * - Cryptocurrency data fetching and caching
@@ -8,33 +8,43 @@
  * - Search functionality
  * - Top gainers and losers tracking
  * - Infinite scrolling capabilities
- * 
+ *
  * The context follows best practices for React Context API usage and state management.
  */
 
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { GlobalData, Ticker } from '../models/types/crypto';
-import CoinloreApiService from '../services/CoinloreApiService';
-import { searchCoins as filterCoins, getTopGainers, getTopLosers } from '../utils/dataTransformers';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { GlobalData, Ticker } from "../models/types/crypto";
+import CoinloreApiService from "../services/CoinloreApiService";
+import {
+  searchCoins as filterCoins,
+  getTopGainers,
+  getTopLosers,
+} from "../utils/dataTransformers";
 
 /**
  * CryptoContextType interface defines the shape of the context data
  * @interface CryptoContextType
  */
 interface CryptoContextType {
-  tickers: Ticker[];                               // List of all cryptocurrency tickers
-  globalData: GlobalData | null;                   // Global market data
-  isLoading: boolean;                              // Loading state indicator
-  error: string | null;                            // Error message if any
-  refreshData: () => Promise<void>;                // Function to refresh all data
-  searchCoins: (query: string) => Promise<void>;   // Function to search for coins
-  searchResults: Ticker[];                         // Search results
-  selectedCoin: Ticker | null;                     // Currently selected coin
-  setSelectedCoin: (coin: Ticker | null) => void;  // Function to set selected coin
-  loadMore: () => Promise<void>;                   // Function to load more tickers (pagination)
-  currentPage: number;                             // Current page for pagination
-  topGainers: Ticker[];                            // List of top gaining coins
-  topLosers: Ticker[];                             // List of top losing coins
+  tickers: Ticker[]; // List of all cryptocurrency tickers
+  globalData: GlobalData | null; // Global market data
+  isLoading: boolean; // Loading state indicator
+  error: string | null; // Error message if any
+  refreshData: () => Promise<void>; // Function to refresh all data
+  searchCoins: (query: string) => Promise<void>; // Function to search for coins
+  searchResults: Ticker[]; // Search results
+  selectedCoin: Ticker | null; // Currently selected coin
+  setSelectedCoin: (coin: Ticker | null) => void; // Function to set selected coin
+  loadMore: () => Promise<void>; // Function to load more tickers (pagination)
+  currentPage: number; // Current page for pagination
+  topGainers: Ticker[]; // List of top gaining coins
+  topLosers: Ticker[]; // List of top losing coins
 }
 
 /**
@@ -68,7 +78,9 @@ export const useCrypto = () => useContext(CryptoContext);
  * @param {React.ReactNode} props.children - Child components
  * @returns {JSX.Element} Provider component
  */
-export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   // State for cryptocurrency tickers and related data
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [globalData, setGlobalData] = useState<GlobalData | null>(null);
@@ -100,12 +112,12 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setTickers(allCoins);
       setGlobalData(globalDataResponse[0]);
       setCurrentPage(0);
-      
+
       // Calculate top gainers and losers from the fetched data
       setTopGainers(getTopGainers(allCoins, 10));
       setTopLosers(getTopLosers(allCoins, 10));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error fetching data');
+      setError(err instanceof Error ? err.message : "Error fetching data");
     } finally {
       setIsLoading(false);
     }
@@ -125,10 +137,10 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         start: nextPage * 50,
         limit: 50,
       });
-      setTickers(prev => [...prev, ...data]);
+      setTickers((prev) => [...prev, ...data]);
       setCurrentPage(nextPage);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error loading more data');
+      setError(err instanceof Error ? err.message : "Error loading more data");
     } finally {
       setIsLoading(false);
     }
@@ -139,30 +151,33 @@ export const CryptoProvider: React.FC<{ children: React.ReactNode }> = ({ childr
    * First searches in locally cached data, then falls back to API if needed
    * @param {string} query - Search query string
    */
-  const searchCoins = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      // Use our utility to search in already loaded data
-      const results = filterCoins(tickers, query);
-      
-      // If there aren't enough local results, search the API
-      if (results.length < 5) {
-        const apiResults = await coinloreService.searchCoins(query);
-        setSearchResults(apiResults);
-      } else {
-        setSearchResults(results);
+  const searchCoins = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        return;
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error when searching');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [coinloreService, tickers]);
+
+      setIsLoading(true);
+      try {
+        // Use our utility to search in already loaded data
+        const results = filterCoins(tickers, query);
+
+        // If there aren't enough local results, search the API
+        if (results.length < 5) {
+          const apiResults = await coinloreService.searchCoins(query);
+          setSearchResults(apiResults);
+        } else {
+          setSearchResults(results);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Error when searching");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [coinloreService, tickers],
+  );
 
   /**
    * Initial data loading when component mounts
