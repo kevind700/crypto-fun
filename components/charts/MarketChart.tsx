@@ -1,13 +1,11 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { GlobalData } from "../../models/types/crypto";
 
 interface MarketChartProps {
   globalData?: GlobalData;
-  height?: number;
-  width?: number;
 }
 
 const formatValue = (value: number): string => {
@@ -19,8 +17,6 @@ const formatValue = (value: number): string => {
 
 const MarketChart: React.FC<MarketChartProps> = ({
   globalData,
-  height = 220,
-  width = Dimensions.get("window").width - 32,
 }) => {
   const theme = useTheme();
 

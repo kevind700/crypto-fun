@@ -1,14 +1,11 @@
-import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import {
-  Menu,
-  Button,
-  Text,
-  Surface,
-  useTheme,
-  IconButton,
-} from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import React, { useState } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+    Menu,
+    Surface,
+    Text,
+} from "react-native-paper";
 
 export type SortOption<T extends string> = {
   field: T;
@@ -30,7 +27,6 @@ function SortSelector<T extends string>({
   onSortChange,
   onDirectionChange,
 }: SortSelectorProps<T>) {
-  const theme = useTheme();
   const [menuVisible, setMenuVisible] = useState(false);
 
   const currentOption = sortOptions.find(

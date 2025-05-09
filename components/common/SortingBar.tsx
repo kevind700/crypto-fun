@@ -1,13 +1,13 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import {
-  View,
-  StyleSheet,
-  ScrollView,
-  ViewStyle,
-  TouchableOpacity,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
+    ViewStyle,
 } from "react-native";
-import { Text, useTheme } from "react-native-paper";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Text } from "react-native-paper";
 
 export type SortOption<T extends string> = {
   field: T;
@@ -29,8 +29,6 @@ function SortingBar<T extends string>({
   onSortChange,
   containerStyle,
 }: SortingBarProps<T>) {
-  const theme = useTheme();
-
   const getSortIcon = () => {
     return isAscending ? "arrow-up" : "arrow-down";
   };

@@ -1,12 +1,12 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-  Dimensions,
-  FlatList,
-  Modal,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    Dimensions,
+    FlatList,
+    Modal,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { Button, Portal, Surface, Text } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -35,10 +35,6 @@ function SortModal<T extends string>({
   const [tempSortField, setTempSortField] = useState<T>(currentSortField);
   const [tempIsAscending, setTempIsAscending] = useState(isAscending);
   const insets = useSafeAreaInsets();
-
-  const currentOption = sortOptions.find(
-    (option) => option.field === currentSortField,
-  );
 
   const openModal = () => {
     setTempSortField(currentSortField);
