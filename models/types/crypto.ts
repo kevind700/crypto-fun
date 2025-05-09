@@ -77,44 +77,6 @@ export interface CoinMarket {
 }
 
 /**
- * Represents social media statistics for a cryptocurrency
- */
-export interface SocialStats {
-  name: string; // Cryptocurrency name
-  symbol: string; // Cryptocurrency symbol
-  reddit: {
-    // Reddit statistics
-    subscribers: number; // Number of subreddit subscribers
-    active_users: number; // Number of active users
-    posts_per_day: number; // Average posts per day
-    comments_per_day: number; // Average comments per day
-    posts_per_hour: number; // Average posts per hour
-    comments_per_hour: number; // Average comments per hour
-  };
-  twitter: {
-    // Twitter statistics
-    followers: number; // Number of followers
-    status_count: number; // Number of tweets
-    favorites: number; // Number of favorites
-    lists: number; // Number of lists
-    following: number; // Number of accounts followed
-    name: string; // Twitter handle
-    link: string; // Twitter profile URL
-  };
-  github: {
-    // GitHub statistics
-    closed_issues: number; // Number of closed issues
-    open_pull_issues: number; // Number of open pull requests
-    closed_pull_issues: number; // Number of closed pull requests
-    forks: number; // Number of repository forks
-    stars: number; // Number of repository stars
-    subscribers: number; // Number of repository watchers
-    open_issues: number; // Number of open issues
-    last_update: string; // Last update timestamp
-  };
-}
-
-/**
  * Market metrics for dashboard display
  */
 export interface MarketMetrics {

@@ -1,10 +1,5 @@
 import axios from "axios";
-import {
-  CoinMarket,
-  Exchange,
-  GlobalData,
-  SocialStats,
-} from "../../models/types/crypto";
+import { CoinMarket, Exchange, GlobalData } from "@/models";
 import CoinloreApiService from "../../services/CoinloreApiService";
 
 jest.mock("axios", () => {
@@ -256,48 +251,6 @@ describe("CoinloreApiService", () => {
       expect(axios.get).toHaveBeenCalledWith("/coin/markets/", {
         params: { id: "1" },
       });
-      expect(result).toEqual(mockResponse);
-    });
-  });
-
-  describe("getCoinSocialStats", () => {
-    it("should fetch social stats for a specific coin", async () => {
-      const mockResponse: SocialStats = {
-        name: "Bitcoin",
-        symbol: "BTC",
-        reddit: {
-          subscribers: 2000000,
-          active_users: 10000,
-          posts_per_day: 100,
-          comments_per_day: 1000,
-          posts_per_hour: 4,
-          comments_per_hour: 40,
-        },
-        twitter: {
-          followers: 1000000,
-          status_count: 5000,
-          favorites: 20000,
-          lists: 1000,
-          following: 100,
-          name: "Bitcoin",
-          link: "https://twitter.com/bitcoin",
-        },
-        github: {
-          closed_issues: 5000,
-          open_pull_issues: 100,
-          closed_pull_issues: 4000,
-          forks: 10000,
-          stars: 50000,
-          subscribers: 5000,
-          open_issues: 200,
-          last_update: "2023-01-01",
-        },
-      };
-
-      (axios.get as jest.Mock).mockResolvedValueOnce({ data: mockResponse });
-
-      const result = await service.getCoinSocialStats("bitcoin");
-      expect(axios.get).toHaveBeenCalled();
       expect(result).toEqual(mockResponse);
     });
   });

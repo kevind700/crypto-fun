@@ -11,23 +11,21 @@
 import {
   CoinMarketsParams,
   ExchangesParams,
-  SocialStatsParams,
   TickersParams,
-} from "../models/types/api";
+} from "@/models/types/api";
 import {
   CoinMarket,
   Exchange,
   GlobalData,
-  SocialStats,
   Ticker,
-} from "../models/types/crypto";
+} from "@/models/types/crypto";
 import {
   getTopGainers,
   getTopLosers,
   searchCoins,
   sortTickersByMarketCap,
   sortTickersByVolume,
-} from "../utils/dataTransformers";
+} from "@/utils/dataTransformers";
 import BaseApiService from "./BaseApiService";
 
 /**
@@ -139,16 +137,6 @@ class CoinloreApiService extends BaseApiService {
     return this.get<CoinMarket[]>(`/coin/markets/`, {
       params,
     });
-  }
-
-  /**
-   * Fetches social media statistics for a cryptocurrency
-   * @param {string} coinName - The name of the cryptocurrency
-   * @returns {Promise<SocialStats>} Promise resolving to social stats data
-   */
-  async getCoinSocialStats(coinName: string): Promise<SocialStats> {
-    const params: SocialStatsParams = { id: coinName };
-    return this.get<SocialStats>(`/coin/social_stats/${coinName}`);
   }
 
   /**
