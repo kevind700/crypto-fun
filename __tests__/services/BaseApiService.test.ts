@@ -6,7 +6,7 @@ const mockPost = jest.fn();
 const mockRequestUse = jest.fn();
 const mockResponseUse = jest.fn();
 
-// Para probar los interceptores
+// For testing interceptors
 let requestFulfilledCallback: Function;
 let requestRejectedCallback: Function;
 let responseFulfilledCallback: Function;
@@ -35,7 +35,7 @@ jest.mock("axios", () => ({
   })),
 }));
 
-// Importamos el código real de BaseApiService pero extendemos para pruebas
+// Import the actual BaseApiService code but extend it for testing
 import BaseApiService from "../../services/BaseApiService";
 
 class TestApiService extends BaseApiService {
@@ -43,7 +43,7 @@ class TestApiService extends BaseApiService {
     super("https://test-api.com");
   }
 
-  // Exponemos los métodos protegidos para probarlos
+  // Expose protected methods for testing
   public testGet<T>(url: string, config?: any): Promise<T> {
     return this.get<T>(url, config);
   }

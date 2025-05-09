@@ -1,14 +1,14 @@
 /**
  * Utils Module
  * 
- * Este módulo unifica todas las utilidades del proyecto en un único punto de entrada.
- * Incluye funciones para:
- * - Transformación de datos de criptomonedas
- * - Formateo de valores monetarios y porcentajes
- * - Utilidades para presentación visual
+ * This module unifies all utility functions in the project into a single entry point.
+ * Includes functions for:
+ * - Cryptocurrency data transformation
+ * - Monetary and percentage value formatting
+ * - Visual presentation utilities
  */
 
-// Exportar todas las utilidades de transformación de datos
+// Export all data transformation utilities
 export {
   getTopGainers,
   getTopLosers,
@@ -16,7 +16,7 @@ export {
   sortTickersByMarketCap, sortTickersByPercentChange, sortTickersByVolume
 } from './dataTransformers';
 
-// Exportar todas las utilidades de formateo
+// Export all formatting utilities
 export {
   formatLargeNumber,
   formatPercentChange, formatPrice, getChangeColor
@@ -24,7 +24,7 @@ export {
 
 import { COLORS } from '../constants';
 
-// Funciones de formateo adicionales (migradas desde app/(tabs)/utils/formatters.ts)
+// Additional formatting functions (migrated from app/(tabs)/utils/formatters.ts)
 
 /**
  * Formats a numeric value with appropriate suffix and dollar sign

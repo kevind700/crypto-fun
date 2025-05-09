@@ -45,7 +45,7 @@ export const styles = StyleSheet.create({
   },
   
   /**
-   * Estilos para los componentes de paginación
+   * Styles for pagination components
    */
   paginationContainer: {
     flexDirection: "row",
