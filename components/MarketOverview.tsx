@@ -7,18 +7,18 @@
  * - A complete list of cryptocurrencies with their key metrics
  *
  * It supports pull-to-refresh functionality and handles loading states,
- * empty states, and error states appropriately.
+ * empty states, and error states appropriately. Now with infinite scroll support.
  *
  * The component is memoized to prevent unnecessary re-renders.
  */
 
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  Text,
-  View,
+    ActivityIndicator,
+    FlatList,
+    RefreshControl,
+    Text,
+    View,
 } from "react-native";
 import { COLORS } from "../constants";
 import { useCrypto } from "../contexts/CryptoContext";
@@ -44,12 +44,30 @@ const MarketOverview: React.FC = () => {
     setSelectedCoin,
     topGainers,
     topLosers,
+    loadMore,
   } = useCrypto();
+  
+  // Estado para controlar la carga de más elementos
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Handle error state - show error message if API request failed
   if (error) {
     return <ErrorMessage message={error} />;
   }
+  
+  /**
+   * Función que se ejecuta cuando el usuario llega al final de la lista
+   */
+  const handleEndReached = async () => {
+    if (isLoading || isLoadingMore) return;
+    
+    setIsLoadingMore(true);
+    try {
+      await loadMore();
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   /**
    * Renders the footer loading indicator when loading more data
@@ -57,10 +75,11 @@ const MarketOverview: React.FC = () => {
    * @returns {JSX.Element | null} Footer component or null if not loading
    */
   const renderFooter = () => {
-    if (!isLoading) return null;
+    if (!isLoadingMore) return null;
+    
     return (
       <View style={styles.footer}>
-        <ActivityIndicator size="large" color={COLORS.LOADING} />
+        <ActivityIndicator size="small" color={COLORS.LOADING} />
       </View>
     );
   };
@@ -123,6 +142,8 @@ const MarketOverview: React.FC = () => {
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
         ListEmptyComponent={renderEmptyComponent}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
       />
     </View>
   );

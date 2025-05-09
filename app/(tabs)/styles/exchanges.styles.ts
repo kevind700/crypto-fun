@@ -117,4 +117,33 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: LAYOUT.SPACING_MD,
   },
+  paginationContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: LAYOUT.SPACING_LG,
+    paddingHorizontal: LAYOUT.SPACING_MD,
+    marginBottom: LAYOUT.SPACING_LG,
+  },
+  paginationText: {
+    fontSize: TYPOGRAPHY.FONT_SIZE_MD,
+    fontWeight: TYPOGRAPHY.FONT_WEIGHT_MEDIUM,
+    color: "#60A5FA",
+  },
+  paginationButton: {
+    height: 36,
+    minWidth: 100,
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  loadingFooter: {
+    padding: LAYOUT.SPACING_MD,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

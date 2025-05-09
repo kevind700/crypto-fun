@@ -2,11 +2,12 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { memo, useEffect, useState } from "react";
 import { FlatList, Linking, View } from "react-native";
 import {
-    Searchbar,
-    Surface,
-    Text,
-    TouchableRipple,
-    useTheme,
+  ActivityIndicator,
+  Searchbar,
+  Surface,
+  Text,
+  TouchableRipple,
+  useTheme
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SortModal, { SortOption } from "../../components/common/SortModal";
@@ -119,17 +120,59 @@ const Exchanges = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("volume_usd");
   const [sortAsc, setSortAsc] = useState(false);
+  const [page, setPage] = useState(1);
+  const pageSize = 10; // Mostramos 10 elementos por página
+  const [displayedExchanges, setDisplayedExchanges] = useState<Exchange[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   useEffect(() => {
     loadExchanges();
   }, []);
 
+  useEffect(() => {
+    applyPagination();
+  }, [exchanges, sortField, sortAsc, page, searchQuery]);
+
+  const resetPagination = () => {
+    setPage(1);
+    setDisplayedExchanges([]);
+  };
+
+  const applyPagination = () => {
+    if (exchanges.length === 0) return;
+
+    // Filtrar por búsqueda
+    const filteredExchanges = exchanges.filter((exchange) =>
+      exchange.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
+    // Ordenar
+    const sortedData = [...filteredExchanges].sort((a, b) => {
+      const multiplier = sortAsc ? 1 : -1;
+      const aValue = parseFloat(a[sortField] as string) || 0;
+      const bValue = parseFloat(b[sortField] as string) || 0;
+      return (aValue - bValue) * multiplier;
+    });
+
+    // Aplicar paginación
+    if (page === 1) {
+      setDisplayedExchanges(sortedData.slice(0, pageSize));
+    } else {
+      const nextItems = sortedData.slice(0, page * pageSize);
+      setDisplayedExchanges(nextItems);
+    }
+    
+    setIsLoadingMore(false);
+  };
+
   const loadExchanges = async () => {
     try {
+      setIsLoading(true);
       const service = CoinloreApiService.getInstance();
       const data = await service.getExchanges();
       const exchangesArray = Object.values(data || {});
       setExchanges(exchangesArray);
+      resetPagination();
     } catch (error) {
       console.error("Failed to load exchanges:", error);
       setExchanges([]);
@@ -141,23 +184,42 @@ const Exchanges = () => {
   const handleSort = (field: SortField) => {
     if (field !== sortField) {
       setSortField(field);
+      resetPagination();
     }
   };
 
   const handleDirectionChange = () => {
     setSortAsc(!sortAsc);
+    resetPagination();
   };
 
-  const filteredExchanges = exchanges.filter((exchange) =>
-    exchange.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    resetPagination();
+  };
 
-  const sortedExchanges = [...filteredExchanges].sort((a, b) => {
-    const multiplier = sortAsc ? 1 : -1;
-    const aValue = parseFloat(a[sortField] as string) || 0;
-    const bValue = parseFloat(b[sortField] as string) || 0;
-    return (aValue - bValue) * multiplier;
-  });
+  const handleEndReached = () => {
+    if (isLoading || isLoadingMore) return;
+    
+    const filteredTotal = exchanges.filter((exchange) =>
+      exchange.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    ).length;
+    
+    if (displayedExchanges.length >= filteredTotal) return;
+    
+    setIsLoadingMore(true);
+    setPage(prevPage => prevPage + 1);
+  };
+
+  const renderFooter = () => {
+    if (!isLoadingMore) return null;
+    
+    return (
+      <View style={styles.loadingFooter}>
+        <ActivityIndicator size="small" color="#60A5FA" />
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView
@@ -168,7 +230,7 @@ const Exchanges = () => {
         <View style={styles.headerControls}>
           <Searchbar
             placeholder="Search exchanges..."
-            onChangeText={setSearchQuery}
+            onChangeText={handleSearch}
             value={searchQuery}
             style={[
               styles.searchBar,
@@ -201,7 +263,7 @@ const Exchanges = () => {
           />
         </View>
 
-        {sortedExchanges.length > 0 && (
+        {displayedExchanges.length > 0 && (
           <View style={styles.sortInfoContainer}>
             <Text style={styles.sortInfoText}>
               Sorting by:{" "}
@@ -214,7 +276,7 @@ const Exchanges = () => {
       </View>
 
       <FlatList
-        data={sortedExchanges}
+        data={displayedExchanges}
         renderItem={({ item }) => <ExchangeItem item={item} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
@@ -222,6 +284,9 @@ const Exchanges = () => {
         refreshing={isLoading}
         onRefresh={loadExchanges}
         ListEmptyComponent={<EmptyListComponent />}
+        ListFooterComponent={renderFooter}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
       />
     </SafeAreaView>
   );

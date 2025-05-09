@@ -2,18 +2,18 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { memo, useEffect, useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
-import { Searchbar, Surface, Text, useTheme } from "react-native-paper";
+import { ActivityIndicator, Searchbar, Surface, Text, useTheme } from "react-native-paper";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SortModal, { SortOption } from "../../components/common/SortModal";
 import { useCrypto } from "../../contexts/CryptoContext";
 import { Ticker } from "../../models/types/crypto";
 import {
-    formatPercentChange,
-    formatValue,
-    getChangeBackgroundColor,
-    getChangeBorderColor,
-    getChangeColor,
+  formatPercentChange,
+  formatValue,
+  getChangeBackgroundColor,
+  getChangeBorderColor,
+  getChangeColor,
 } from "../../utils";
 import { styles } from "./styles/markets.styles";
 
@@ -162,30 +162,70 @@ const EmptyListComponent = memo(() => {
 
 const Markets = () => {
   const theme = useTheme();
-  const { tickers } = useCrypto();
+  const { tickers, isLoading } = useCrypto();
   const [sortField, setSortField] = useState<SortField>("rank");
   const [sortAsc, setSortAsc] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredTickers, setFilteredTickers] = useState<Ticker[]>([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 10; // Mostramos 10 elementos por página
+  const [displayedTickers, setDisplayedTickers] = useState<Ticker[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   useEffect(() => {
     if (tickers) {
       setFilteredTickers(tickers);
+      resetPagination();
     }
   }, [tickers]);
+
+  useEffect(() => {
+    applyPagination();
+  }, [filteredTickers, sortField, sortAsc, page]);
+
+  const resetPagination = () => {
+    setPage(1);
+    setDisplayedTickers([]);
+  };
+
+  const applyPagination = () => {
+    if (filteredTickers.length === 0) return;
+
+    const sortedData = [...filteredTickers].sort((a, b) => {
+      const multiplier = sortAsc ? 1 : -1;
+      const aValue = parseFloat(a[sortField] as string) || 0;
+      const bValue = parseFloat(b[sortField] as string) || 0;
+      return (aValue - bValue) * multiplier;
+    });
+
+    // Si estamos en la primera página, reemplazamos completamente los elementos
+    if (page === 1) {
+      setDisplayedTickers(sortedData.slice(0, pageSize));
+    } else {
+      // Si es página posterior, añadimos los nuevos elementos
+      const nextItems = sortedData.slice(0, page * pageSize);
+      setDisplayedTickers(nextItems);
+    }
+    
+    setIsLoadingMore(false);
+  };
 
   const handleSort = (field: SortField) => {
     if (field !== sortField) {
       setSortField(field);
+      resetPagination();
     }
   };
 
   const handleDirectionChange = () => {
     setSortAsc(!sortAsc);
+    resetPagination();
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    resetPagination();
+    
     if (!query.trim()) {
       setFilteredTickers(tickers || []);
     } else {
@@ -199,12 +239,23 @@ const Markets = () => {
     }
   };
 
-  const sortedTickers = [...filteredTickers].sort((a, b) => {
-    const multiplier = sortAsc ? 1 : -1;
-    const aValue = parseFloat(a[sortField] as string) || 0;
-    const bValue = parseFloat(b[sortField] as string) || 0;
-    return (aValue - bValue) * multiplier;
-  });
+  const handleEndReached = () => {
+    if (isLoading || isLoadingMore) return;
+    if (displayedTickers.length >= filteredTickers.length) return;
+    
+    setIsLoadingMore(true);
+    setPage(prevPage => prevPage + 1);
+  };
+
+  const renderFooter = () => {
+    if (!isLoadingMore) return null;
+    
+    return (
+      <View style={styles.footer}>
+        <ActivityIndicator size="small" color="#60A5FA" />
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView
@@ -248,7 +299,7 @@ const Markets = () => {
           />
         </View>
 
-        {sortedTickers.length > 0 && (
+        {filteredTickers.length > 0 && (
           <View style={styles.sortInfoContainer}>
             <Text style={styles.sortInfoText}>
               Sorting by:{" "}
@@ -261,13 +312,22 @@ const Markets = () => {
       </View>
 
       <FlatList
-        data={sortedTickers}
+        data={displayedTickers}
         renderItem={({ item }) => <CoinItem item={item} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={<EmptyListComponent />}
+        ListFooterComponent={renderFooter}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
       />
+      
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#60A5FA" />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
