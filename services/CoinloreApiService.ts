@@ -9,23 +9,23 @@
  */
 
 import {
-  CoinMarketsParams,
-  ExchangesParams,
-  TickersParams,
+    CoinMarketsParams,
+    ExchangesParams,
+    TickersParams,
 } from "@/models/types/api";
 import {
-  CoinMarket,
-  Exchange,
-  GlobalData,
-  Ticker,
+    CoinMarket,
+    Exchange,
+    GlobalData,
+    Ticker,
 } from "@/models/types/crypto";
 import {
-  getTopGainers,
-  getTopLosers,
-  searchCoins,
-  sortTickersByMarketCap,
-  sortTickersByVolume,
-} from "@/utils/dataTransformers";
+    getTopGainers,
+    getTopLosers,
+    searchCoins,
+    sortTickersByMarketCap,
+    sortTickersByVolume,
+} from "@/utils";
 import BaseApiService from "./BaseApiService";
 
 /**

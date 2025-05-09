@@ -8,14 +8,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import SortModal, { SortOption } from "../../components/common/SortModal";
 import { useCrypto } from "../../contexts/CryptoContext";
 import { Ticker } from "../../models/types/crypto";
-import { styles } from "./styles/markets.styles";
 import {
-  formatPercentChange,
-  formatValue,
-  getChangeBackgroundColor,
-  getChangeBorderColor,
-  getChangeColor,
-} from "./utils/formatters";
+    formatPercentChange,
+    formatValue,
+    getChangeBackgroundColor,
+    getChangeBorderColor,
+    getChangeColor,
+} from "../../utils";
+import { styles } from "./styles/markets.styles";
 
 type SortField =
   | "rank"

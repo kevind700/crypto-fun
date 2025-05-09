@@ -17,4 +17,7 @@ module.exports = {
     'services/**/*.{ts,tsx,js,jsx}',
     '!**/node_modules/**',
   ],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1'
+  },
 }; 

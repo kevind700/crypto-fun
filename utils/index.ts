@@ -1,13 +1,28 @@
 /**
- * Tab-specific Formatters Utility Module
- *
- * This module provides helper functions for formatting values
- * specifically for the tab screens of the application.
- * It includes functions for:
- * - Formatting large numbers with appropriate suffixes (T, B, M, K)
- * - Formatting trading volume
- * - Determining colors and backgrounds for price changes
+ * Utils Module
+ * 
+ * Este módulo unifica todas las utilidades del proyecto en un único punto de entrada.
+ * Incluye funciones para:
+ * - Transformación de datos de criptomonedas
+ * - Formateo de valores monetarios y porcentajes
+ * - Utilidades para presentación visual
  */
+
+// Exportar todas las utilidades de transformación de datos
+export {
+  getTopGainers,
+  getTopLosers,
+  searchCoins,
+  sortTickersByMarketCap, sortTickersByPercentChange, sortTickersByVolume
+} from './dataTransformers';
+
+// Exportar todas las utilidades de formateo
+export {
+  formatLargeNumber,
+  formatPercentChange, formatPrice, getChangeColor
+} from './formatters';
+
+// Funciones de formateo adicionales (migradas desde app/(tabs)/utils/formatters.ts)
 
 /**
  * Formats a numeric value with appropriate suffix and dollar sign
@@ -72,34 +87,4 @@ export const getChangeBorderColor = (
       ? parseFloat(percentChange)
       : percentChange;
   return change >= 0 ? "rgba(34, 197, 94, 0.3)" : "rgba(239, 68, 68, 0.3)";
-};
-
-/**
- * Gets the text color for a percentage change
- * Returns solid green for positive values and red for negative
- *
- * @param {string|number} percentChange - The percentage change value
- * @returns {string} Hex color code for text
- */
-export const getChangeColor = (percentChange: string | number): string => {
-  const change =
-    typeof percentChange === "string"
-      ? parseFloat(percentChange)
-      : percentChange;
-  return change >= 0 ? "#22c55e" : "#ef4444";
-};
-
-/**
- * Formats a percentage change with a plus or minus sign
- * Ensures positive numbers show a plus sign prefix
- *
- * @param {string|number} percentChange - The percentage change value
- * @returns {string} Formatted percentage string with sign and % symbol
- */
-export const formatPercentChange = (percentChange: string | number): string => {
-  const change =
-    typeof percentChange === "string"
-      ? parseFloat(percentChange)
-      : percentChange;
-  return `${change >= 0 ? "+" : ""}${change}%`;
 };

@@ -2,18 +2,18 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { memo, useEffect, useState } from "react";
 import { FlatList, Linking, View } from "react-native";
 import {
-  Searchbar,
-  Surface,
-  Text,
-  TouchableRipple,
-  useTheme,
+    Searchbar,
+    Surface,
+    Text,
+    TouchableRipple,
+    useTheme,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import SortModal, { SortOption } from "../../components/common/SortModal";
 import { Exchange } from "../../models/types/crypto";
 import CoinloreApiService from "../../services/CoinloreApiService";
+import { formatVolume } from "../../utils";
 import { styles } from "./styles/exchanges.styles";
-import { formatVolume } from "./utils/formatters";
 
 type SortField = "rank" | "volume_usd" | "active_pairs";
 

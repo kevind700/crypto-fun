@@ -17,13 +17,13 @@ import { Surface, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCrypto } from "../../contexts/CryptoContext";
 import { GlobalData, Ticker } from "../../models/types/crypto";
-import { styles } from "./styles/index.styles";
 import {
-  formatPercentChange,
-  formatValue,
-  getChangeBackgroundColor,
-  getChangeColor,
-} from "./utils/formatters";
+    formatPercentChange,
+    formatValue,
+    getChangeBackgroundColor,
+    getChangeColor,
+} from "../../utils";
+import { styles } from "./styles/index.styles";
 
 /**
  * Component props for TopMoversCard
