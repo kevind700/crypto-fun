@@ -6,10 +6,11 @@ Este proyecto es una aplicación móvil para seguimiento y análisis de criptomo
 
 - [Arquitectura del Proyecto](#arquitectura-del-proyecto)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Modelos de Datos](#modelos-de-datos)
 - [Servicios de API](#servicios-de-api)
   - [BaseApiService](#baseapiservice)
   - [CoinloreApiService](#coinloreapiservice)
-- [Tipos de Datos](#tipos-de-datos)
+- [Componentes Principales](#componentes-principales)
 - [Pruebas Unitarias](#pruebas-unitarias)
 - [Implementación de Pruebas](#implementación-de-pruebas)
   - [Herramientas y Configuración](#herramientas-y-configuración)
@@ -21,24 +22,39 @@ Este proyecto es una aplicación móvil para seguimiento y análisis de criptomo
 
 ## Arquitectura del Proyecto
 
-El proyecto sigue una arquitectura de servicios modular y está estructurado de la siguiente manera:
+El proyecto sigue una arquitectura modular con separación clara de responsabilidades y está estructurado de la siguiente manera:
 
 ```
 crypto-fun/
-├── app/               # Directorio principal de la aplicación (enrutamiento basado en archivos)
-├── assets/            # Recursos estáticos (imágenes, fuentes, etc.)
-├── components/        # Componentes reutilizables de UI
-├── constants/         # Constantes y configuraciones globales
-├── contexts/          # Contextos de React para gestión de estado global
-├── hooks/             # Hooks personalizados de React
-├── services/          # Servicios para comunicación con APIs
-│   ├── BaseApiService.ts         # Clase base para servicios API
-│   ├── CoinloreApiService.ts     # Implementación específica para API Coinlore
-│   └── types.ts                  # Tipos y interfaces para datos de API
-├── theme/             # Definiciones de temas, estilos y diseño
-├── utils/             # Utilidades y funciones auxiliares
-└── __tests__/         # Pruebas unitarias e integración
-    └── services/      # Pruebas específicas para servicios
+├── app/                      # Enrutamiento basado en archivos (Expo Router)
+│   ├── (tabs)/               # Pantallas principales con navegación por tabs
+│   │   ├── index.tsx         # Dashboard principal
+│   │   ├── markets.tsx       # Pantalla de mercados
+│   │   ├── exchanges.tsx     # Pantalla de exchanges
+│   │   └── _layout.tsx       # Configuración de la navegación por tabs
+│   ├── coin-detail.tsx       # Vista detallada de criptomoneda
+│   └── _layout.tsx           # Layout principal de la aplicación
+├── assets/                   # Recursos estáticos (imágenes, fuentes, etc.)
+├── components/               # Componentes reutilizables de UI
+├── constants/                # Constantes y configuraciones globales
+├── contexts/                 # Contextos de React para gestión de estado global
+├── hooks/                    # Hooks personalizados de React
+├── models/                   # Modelos de datos y tipos
+│   ├── types/                # Definiciones de tipos TypeScript
+│   │   ├── api.ts            # Tipos para parámetros y respuestas de API
+│   │   ├── chart.ts          # Tipos para datos y configuración de gráficos
+│   │   ├── crypto.ts         # Tipos para datos de criptomonedas
+│   │   ├── ui.ts             # Tipos para componentes de UI
+│   │   └── index.ts          # Exportaciones de tipos
+│   ├── schemas/              # Esquemas de validación (implementación futura)
+│   └── interfaces/           # Interfaces de componentes (implementación futura)
+├── services/                 # Servicios para comunicación con APIs
+│   ├── BaseApiService.ts     # Clase base para servicios API
+│   └── CoinloreApiService.ts # Implementación específica para API Coinlore
+├── theme/                    # Definiciones de temas, estilos y diseño
+├── utils/                    # Utilidades y funciones auxiliares
+└── __tests__/               # Pruebas unitarias e integración
+    └── services/            # Pruebas específicas para servicios
 ```
 
 ## Tecnologías Utilizadas
@@ -46,13 +62,33 @@ crypto-fun/
 - **React Native (0.79.2)**: Framework principal para desarrollo móvil multiplataforma
 - **Expo (53.0.8)**: Plataforma para simplificar el desarrollo de React Native
 - **TypeScript (5.8.3)**: Superconjunto tipado de JavaScript para desarrollo robusto
-- **Axios (1.9.0)**: Cliente HTTP para comunicación con APIs
+- **Expo Router (5.0.6)**: Sistema de enrutamiento basado en archivos
 - **React Navigation (7.1.6)**: Navegación y enrutamiento entre pantallas
-- **Jest (29.7.0)**: Framework de pruebas
-- **React Native Chart Kit**: Visualización de datos y gráficos
-- **React Native Paper**: Componentes UI con Material Design
-- **Expo Router**: Sistema de enrutamiento basado en archivos
-- **Expo Reanimated**: Animaciones fluidas y de alto rendimiento
+- **Axios (1.9.0)**: Cliente HTTP para comunicación con APIs
+- **React Native Chart Kit (6.12.0)**: Visualización de datos y gráficos
+- **React Native Paper (5.14.0)**: Componentes UI con Material Design
+- **React Native Reanimated (3.17.4)**: Animaciones fluidas y de alto rendimiento
+- **Jest (29.7.0)** y **ts-jest (29.3.2)**: Framework de pruebas
+- **Rainbow ME Animated Charts**: Visualizaciones avanzadas para datos financieros
+
+## Modelos de Datos
+
+El proyecto utiliza una estructura de tipos TypeScript bien organizada para garantizar la coherencia de datos:
+
+### Tipos de Criptomonedas
+
+- **Ticker**: Datos completos de una criptomoneda (precio, cambio porcentual, volumen)
+- **GlobalData**: Información global del mercado (capitalización total, dominancia BTC/ETH)
+- **Exchange**: Detalles de exchanges de criptomonedas
+- **CoinMarket**: Datos de mercados específicos para una criptomoneda
+- **MarketMetrics**: Métricas para el panel de control
+- **PriceAlert**: Configuración de alertas de precio
+
+### Tipos de UI y Gráficos
+
+- Tipos específicos para componentes de UI
+- Configuraciones de gráficos y visualizaciones
+- Tipos para gestión de estado y temas
 
 ## Servicios de API
 
@@ -92,15 +128,19 @@ async getTopGainers(limit: number = 10): Promise<Ticker[]> {
 }
 ```
 
-## Tipos de Datos
+## Componentes Principales
 
-El proyecto utiliza TypeScript para proporcionar tipado estricto en toda la aplicación. Los principales tipos incluyen:
+La aplicación cuenta con varias pantallas y componentes clave:
 
-- **Ticker**: Representa información de una criptomoneda (precio, cambio porcentual, volumen)
-- **GlobalData**: Datos globales del mercado (capitalización total, volumen, dominancia BTC/ETH)
-- **Exchange**: Detalles sobre exchanges de criptomonedas
-- **CoinMarket**: Información sobre mercados específicos para una criptomoneda
-- **SocialStats**: Estadísticas sociales (GitHub, Twitter, Reddit) para proyectos de criptomonedas
+- **Dashboard (index.tsx)**: Panel principal con resumen del mercado y monedas principales
+- **Markets (markets.tsx)**: Listado completo de criptomonedas con filtros y búsqueda
+- **Exchanges (exchanges.tsx)**: Directorio de exchanges con métricas de volumen
+- **Coin Detail (coin-detail.tsx)**: Vista detallada de una criptomoneda con gráficos y estadísticas
+
+Los componentes aprovechan características avanzadas como:
+- **Expo Router**: Navegación basada en archivos para una experiencia de aplicación nativa
+- **React Native Reanimated**: Animaciones optimizadas para transiciones fluidas
+- **Rainbow ME Charts**: Visualizaciones interactivas de datos históricos de precios
 
 ## Pruebas Unitarias
 
@@ -172,6 +212,11 @@ Las pruebas alcanzan una cobertura completa para garantizar la robustez y confia
    npm run test:coverage
    ```
 
+6. Resetear proyecto (útil para limpiar caché):
+   ```bash
+   npm run reset-project
+   ```
+
 ## Configuración de Git
 
 El proyecto incluye configuraciones específicas para gestión de código:
@@ -179,6 +224,7 @@ El proyecto incluye configuraciones específicas para gestión de código:
 - **.gitignore**: Exclusión de archivos no versionados (node_modules, build, coverage)
 - **.gitattributes**: Normalización de finales de línea y manejo de archivos binarios
 - **.npmignore**: Configuración para publicación de paquete NPM
+- **.husky**: Hooks de pre-commit para asegurar calidad del código
 
 ---
 
